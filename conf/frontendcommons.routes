@@ -1,0 +1,6 @@
+
+->          /                                                        commons.Routes
+
+GET        /login                   org.iatoki.judgels.jophiel.commons.controllers.JophielClientController.login(returnUri: String)
+GET        /verify                  org.iatoki.judgels.jophiel.commons.controllers.JophielClientController.verify()
+GET        /logout/:returnUri       org.iatoki.judgels.jophiel.commons.controllers.JophielClientController.logout(returnUri: String)

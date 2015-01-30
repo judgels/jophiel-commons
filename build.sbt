@@ -9,6 +9,7 @@ lazy val frontendcommons = (project.in(file(".")))
                     .enablePlugins(PlayJava)
                     .disablePlugins(plugins.JUnitXmlReportPlugin)
                     .dependsOn(commons, gabrielcommons)
+                    .aggregate(commons, gabrielcommons)
 
 lazy val commons = (RootProject(file("../judgels-play-commons")))
 
