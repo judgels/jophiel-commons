@@ -22,10 +22,10 @@ public final class JophielUtils {
         // prevent instantiation
     }
 
-    public static ClientID getClientId() {
-        String clientId = Play.application().configuration().getString("jophiel.clientId");
+    public static ClientID getClientJid() {
+        String clientId = Play.application().configuration().getString("jophiel.clientJid");
         if (clientId == null) {
-            throw new IllegalStateException("jophiel.clientId not found in configuration");
+            throw new IllegalStateException("jophiel.clientJid not found in configuration");
         }
         return new ClientID(clientId);
     }

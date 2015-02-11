@@ -43,7 +43,7 @@ public final class JophielClientController extends Controller {
         URI endpoint = JophielUtils.getEndpoint("auth");
         ResponseType responseType = new ResponseType(ResponseType.Value.CODE);
         Scope scope = Scope.parse("openid");
-        ClientID clientId = JophielUtils.getClientId();
+        ClientID clientId = JophielUtils.getClientJid();
         URI redirectUri = getRedirectUri();
 
         State state = new State(returnUri);
@@ -87,7 +87,7 @@ public final class JophielClientController extends Controller {
         String returnUri = successResponse.getState().getValue();
 
         URI endpoint = JophielUtils.getEndpoint("token");
-        ClientAuthentication clientAuth = new ClientSecretBasic(JophielUtils.getClientId(), JophielUtils.getClientSecret());
+        ClientAuthentication clientAuth = new ClientSecretBasic(JophielUtils.getClientJid(), JophielUtils.getClientSecret());
         AuthorizationCodeGrant grant = new AuthorizationCodeGrant(authCode, getRedirectUri());
         Scope scope = new Scope("openid");
 
