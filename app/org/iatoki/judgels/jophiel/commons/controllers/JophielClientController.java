@@ -135,7 +135,7 @@ public final class JophielClientController extends Controller {
         session("userJid", userJid);
         session("accessToken", accessToken.toString());
         session("expirationTime", "" + expirationTime);
-        session("idToken", idToken.toString());
+        session("idToken", idToken.serialize());
 
         BearerAccessToken bearerAccessToken;
         try {
@@ -164,6 +164,7 @@ public final class JophielClientController extends Controller {
                 session("name", userInfoSuccessResponse.getUserInfo().getName());
                 session("email", userInfoSuccessResponse.getUserInfo().getEmail().toString());
                 session("username", userInfoSuccessResponse.getUserInfo().getPreferredUsername());
+                session("avatar", userInfoSuccessResponse.getUserInfo().getPicture().toString());
             } else {
                 UserInfoErrorResponse userInfoErrorResponse = (UserInfoErrorResponse) userInfoResponse;
             }
