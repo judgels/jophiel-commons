@@ -58,11 +58,7 @@ public final class JophielUtils {
 
         try {
             HTTPResponse httpResponse = httpRequest.send();
-            if (httpResponse.getStatusCode() == HTTPResponse.SC_OK) {
-                return true;
-            } else {
-                return false;
-            }
+            return (httpResponse.getStatusCode() == HTTPResponse.SC_OK);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

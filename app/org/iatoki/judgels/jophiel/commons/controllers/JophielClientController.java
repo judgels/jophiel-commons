@@ -29,13 +29,16 @@ import com.nimbusds.openid.connect.sdk.UserInfoResponse;
 import com.nimbusds.openid.connect.sdk.UserInfoSuccessResponse;
 import org.apache.commons.codec.binary.Base64;
 import org.iatoki.judgels.jophiel.commons.JophielUtils;
+import play.Play;
 import play.mvc.Controller;
 import play.mvc.Result;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 
 public final class JophielClientController extends Controller {
 
@@ -171,9 +174,25 @@ public final class JophielClientController extends Controller {
         return redirect(returnUri);
     }
 
+    public static Result profile(String returnUri) {
+        try {
+            URI profileUri = JophielUtils.getEndpoint("serviceProfile/" + URLEncoder.encode(returnUri, "UTF-8"));
+
+            return redirect(profileUri.toString() + "");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static Result logout(String returnUri) {
-        session().clear();
-        return redirect(returnUri);
+        try {
+            URI logoutUri = JophielUtils.getEndpoint("serviceLogout/" + URLEncoder.encode(returnUri, "UTF-8"));
+
+            session().clear();
+            return redirect(logoutUri.toString() + "");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static URI getRedirectUri() {
