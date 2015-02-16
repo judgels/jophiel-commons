@@ -22,15 +22,14 @@ resolvers += "IA TOKI Artifactory" at "http://artifactory.ia-toki.org/artifactor
 libraryDependencies ++= Seq(
   javaJdbc,
   javaWs,
-  javaJpa.exclude("org.hibernate.javax.persistence", "hibernate-jpa-2" +
-    ".0-api"),
+  javaJpa.exclude("org.hibernate.javax.persistence", "hibernate-jpa-2.0-api"),
   filters,
   cache,
   "commons-io" % "commons-io" % "2.4",
   "com.google.guava" % "guava" % "r05",
   "mysql" % "mysql-connector-java" % "5.1.26",
   "org.hibernate" % "hibernate-entitymanager" % "4.3.7.Final",
-  "org.iatoki.judgels.sealtiel" % "sealtielMessage" % "1.0.0"
+  "org.iatoki.judgels.sealtiel" % "sealtiel-message" % "1.0.3"
 )
 
 TestNGPlugin.testNGSettings
