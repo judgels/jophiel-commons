@@ -28,6 +28,7 @@ import com.nimbusds.openid.connect.sdk.UserInfoErrorResponse;
 import com.nimbusds.openid.connect.sdk.UserInfoResponse;
 import com.nimbusds.openid.connect.sdk.UserInfoSuccessResponse;
 import org.apache.commons.codec.binary.Base64;
+import org.iatoki.judgels.commons.AbstractJidCacheService;
 import org.iatoki.judgels.jophiel.commons.JophielUtils;
 import play.Play;
 import play.mvc.Controller;
@@ -171,6 +172,7 @@ public final class JophielClientController extends Controller {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
+
 
         return redirect(returnUri);
     }

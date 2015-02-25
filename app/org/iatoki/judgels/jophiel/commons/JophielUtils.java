@@ -46,19 +46,28 @@ public final class JophielUtils {
         return Base64.encodeBase64String(getAccessToken().getBytes());
     }
 
-    public static boolean verifyUserJid(String userJid) {
+    public static String verifyUsername(String username) {
         HTTPRequest httpRequest;
         try {
             httpRequest = new HTTPRequest(HTTPRequest.Method.GET, getEndpoint("verifyUser").toURL());
-            httpRequest.setAuthorization("Bearer "+ JophielUtils.getEncodedAccessToken());
-            httpRequest.setQuery("userJid=" + userJid);
+            httpRequest.setAuthorization("Bearer " + JophielUtils.getEncodedAccessToken());
+            httpRequest.setQuery("username=" + username);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
 
         try {
             HTTPResponse httpResponse = httpRequest.send();
-            return (httpResponse.getStatusCode() == HTTPResponse.SC_OK);
+            if (httpResponse.getStatusCode() == HTTPResponse.SC_OK) {
+                JsonNode jsonNode = Json.parse(httpResponse.getContent());
+                if (jsonNode.get("success").asBoolean()) {
+                    return jsonNode.get("jid").asText();
+                } else {
+                    return null;
+                }
+            } else {
+                return null;
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
