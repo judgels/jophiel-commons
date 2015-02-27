@@ -29,6 +29,7 @@ import com.nimbusds.openid.connect.sdk.UserInfoResponse;
 import com.nimbusds.openid.connect.sdk.UserInfoSuccessResponse;
 import org.apache.commons.codec.binary.Base64;
 import org.iatoki.judgels.commons.AbstractJidCacheService;
+import org.iatoki.judgels.commons.JudgelsUtils;
 import org.iatoki.judgels.jophiel.commons.JophielUtils;
 import play.Play;
 import play.mvc.Controller;
@@ -145,13 +146,37 @@ public final class JophielClientController extends Controller {
             throw new RuntimeException(e);
         }
 
+        refreshUserInfo(accessToken.toString());
+
+        return redirect(returnUri);
+    }
+
+    public static Result profile(String returnUri) {
+        try {
+            returnUri = org.iatoki.judgels.jophiel.commons.controllers.routes.JophielClientController.afterProfile(returnUri).absoluteURL(request());
+            URI profileUri = JophielUtils.getEndpoint("serviceProfile/" + URLEncoder.encode(returnUri, "UTF-8"));
+
+            return redirect(profileUri.toString() + "");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Result afterProfile(String returnUri) {
+        refreshUserInfo(session("accessToken"));
+        return redirect(returnUri);
+    }
+
+    public static void refreshUserInfo(String accessToken) {
+        HTTPRequest httpRequest;
         try {
             httpRequest = new HTTPRequest(HTTPRequest.Method.GET, JophielUtils.getEndpoint("userinfo").toURL());
-            httpRequest.setAuthorization("Bearer "+ Base64.encodeBase64String(accessToken.toString().getBytes()));
+            httpRequest.setAuthorization("Bearer "+ Base64.encodeBase64String(accessToken.getBytes()));
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
 
+        HTTPResponse httpResponse;
         try {
             httpResponse = httpRequest.send();
         } catch (IOException e) {
@@ -170,19 +195,6 @@ public final class JophielClientController extends Controller {
                 UserInfoErrorResponse userInfoErrorResponse = (UserInfoErrorResponse) userInfoResponse;
             }
         } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-
-
-        return redirect(returnUri);
-    }
-
-    public static Result profile(String returnUri) {
-        try {
-            URI profileUri = JophielUtils.getEndpoint("serviceProfile/" + URLEncoder.encode(returnUri, "UTF-8"));
-
-            return redirect(profileUri.toString() + "");
-        } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
     }

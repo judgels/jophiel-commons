@@ -1,5 +1,7 @@
 package org.iatoki.judgels.jophiel;
 
+import java.net.URL;
+
 public final class User {
 
     private long id;
@@ -12,12 +14,15 @@ public final class User {
 
     private String email;
 
-    public User(long id, String jid, String username, String name, String email) {
+    private URL profilePictureUrl;
+
+    public User(long id, String jid, String username, String name, String email, URL profilePictureUrl) {
         this.id = id;
         this.jid = jid;
         this.username = username;
         this.name = name;
         this.email = email;
+        this.profilePictureUrl = profilePictureUrl;
     }
 
     public long getId() {
@@ -38,5 +43,9 @@ public final class User {
 
     public String getEmail() {
         return email;
+    }
+
+    public URL getProfilePictureUrl() {
+        return profilePictureUrl;
     }
 }

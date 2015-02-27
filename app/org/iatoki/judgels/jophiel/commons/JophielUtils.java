@@ -6,6 +6,7 @@ import com.nimbusds.oauth2.sdk.http.HTTPRequest;
 import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import org.apache.commons.codec.binary.Base64;
+import org.iatoki.judgels.commons.IdentityUtils;
 import org.iatoki.judgels.jophiel.User;
 import play.Play;
 import play.libs.Json;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 public final class JophielUtils {
 
@@ -87,7 +89,7 @@ public final class JophielUtils {
             HTTPResponse httpResponse = httpRequest.send();
             if (httpResponse.getStatusCode() == HTTPResponse.SC_OK) {
                 JsonNode response = Json.parse(httpResponse.getContent());
-                User user = new User(response.get("id").asInt(), response.get("jid").asText(), response.get("username").asText(), response.get("name").asText(), response.get("email").asText());
+                User user = new User(response.get("id").asInt(), response.get("jid").asText(), response.get("username").asText(), response.get("name").asText(), response.get("email").asText(), new URL(response.get("profilePictureUrl").asText()));
 
                 return user;
             } else {
@@ -118,4 +120,19 @@ public final class JophielUtils {
             throw new IllegalStateException("jophiel.baseUrl malformed in configuration");
         }
     }
+
+    public static URL getDefaultAvatarUrl() throws MalformedURLException {
+        return getEndpoint("assets/images/avatar/avatar-default.png").toURL();
+    }
+
+    public static void updateUserAvatarCache(AbstractAvatarCacheService<?> avatarCacheService) {
+        if (IdentityUtils.getUserJid() != null) {
+            try {
+                avatarCacheService.putImageUrl(IdentityUtils.getUserJid(), new URL(Http.Context.current().session().get("avatar")), IdentityUtils.getUserJid(), IdentityUtils.getIpAddress());
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
 }
