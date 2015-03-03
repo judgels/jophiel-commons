@@ -1,19 +1,19 @@
 import de.johoop.testngplugin.TestNGPlugin
 import de.johoop.jacoco4sbt.JacocoPlugin.jacoco
 
-name := """judgels-frontend-commons"""
+name := """frontendcommons"""
 
 version := "1.0-SNAPSHOT"
 
 lazy val frontendcommons = (project.in(file(".")))
                     .enablePlugins(PlayJava)
                     .disablePlugins(plugins.JUnitXmlReportPlugin)
-                    .dependsOn(commons, gabrielcommons)
-                    .aggregate(commons, gabrielcommons)
+                    .dependsOn(playcommons, gabrielcommons)
+                    .aggregate(playcommons, gabrielcommons)
 
-lazy val commons = (RootProject(file("../judgels-play-commons")))
+lazy val playcommons = (RootProject(file("../judgels-play-commons")))
 
-lazy val gabrielcommons = (RootProject(file("../gabriel-commons")))
+lazy val gabrielcommons = (RootProject(file("../judgels-gabriel-commons")))
 
 scalaVersion := "2.11.1"
 
