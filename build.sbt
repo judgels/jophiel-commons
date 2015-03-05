@@ -29,7 +29,7 @@ libraryDependencies ++= Seq(
   "com.google.guava" % "guava" % "r05",
   "mysql" % "mysql-connector-java" % "5.1.26",
   "org.hibernate" % "hibernate-entitymanager" % "4.3.7.Final",
-  "org.iatoki.judgels.sealtiel" % "sealtiel-message" % "1.0.3"
+  "org.iatoki.judgels.sealtiel" % "sealtiel-message" % "1.0.4"
 )
 
 TestNGPlugin.testNGSettings
