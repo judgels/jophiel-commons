@@ -3,7 +3,7 @@ import de.johoop.jacoco4sbt.JacocoPlugin.jacoco
 
 name := """frontendcommons"""
 
-version := "1.0-SNAPSHOT"
+version := "0.1.0"
 
 lazy val frontendcommons = (project.in(file(".")))
                     .enablePlugins(PlayJava)
