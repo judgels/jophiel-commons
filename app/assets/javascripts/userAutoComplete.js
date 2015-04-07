@@ -5,9 +5,6 @@ require(["jquery", "jquery-ui"], function( __tes__ ) {
                 url: jophielAutoCompleteUrl + "?term=" + request.term,
                 type: 'GET',
                 dataType: "json",
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader ("Authorization", "Bearer " + encodedAccessToken);
-                },
                 success: function( data ) {
                     response( data );
                 }

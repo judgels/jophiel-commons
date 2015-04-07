@@ -49,33 +49,17 @@ public final class JophielUtils {
         return new Secret(clientSecret);
     }
 
-    public static String getAccessToken() {
-        return Http.Context.current().session().get("accessToken");
-    }
-
-    public static String getEncodedAccessToken() {
-        return Base64.encodeBase64String(getAccessToken().getBytes());
-    }
-
     public static String getBase64Encoded(String s) {
         return Base64.encodeBase64String(s.getBytes());
     }
 
     public static String verifyUsername(String username) {
         try {
-            URL url = getEndpoint("verifyUsername").toURL();
+            URL url = getEndpoint("verifyUsername?username=" + URLEncoder.encode(username, "UTF-8")).toURL();
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
-            connection.setRequestProperty("Authorization", "Basic " + getClientJid() + ":" + getClientSecret());
-            connection.setDoInput(true);
+            connection.setRequestProperty("Authorization", "Basic " + getBase64Encoded(getClientJid() + ":" + getClientSecret().getValue()));
             connection.setDoOutput(true);
-
-            OutputStream os = connection.getOutputStream();
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-            writer.write("username=" + URLEncoder.encode(username, "UTF-8"));
-            writer.flush();
-            writer.close();
-            os.close();
 
             connection.connect();
 
@@ -86,9 +70,10 @@ public final class JophielUtils {
             if (jsonNode.get("success").asBoolean()) {
                 return jsonNode.get("jid").asText();
             } else {
-                throw null;
+                return null;
             }
         } catch (IOException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
@@ -125,19 +110,11 @@ public final class JophielUtils {
 
     public static User getUserByUserJid(String userJid) {
         try {
-            URL url = getEndpoint("userInfoByJid").toURL();
+            URL url = getEndpoint("userInfoByJid?userJid=" + URLEncoder.encode(userJid, "UTF-8")).toURL();
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
-            connection.setRequestProperty("Authorization", "Basic " + getClientJid() + ":" + getClientSecret());
-            connection.setDoInput(true);
+            connection.setRequestProperty("Authorization", "Basic " + getBase64Encoded(getClientJid() + ":" + getClientSecret().getValue()));
             connection.setDoOutput(true);
-
-            OutputStream os = connection.getOutputStream();
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-            writer.write("userJid=" + URLEncoder.encode(userJid, "UTF-8"));
-            writer.flush();
-            writer.close();
-            os.close();
 
             connection.connect();
 
