@@ -17,6 +17,7 @@ import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.State;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
+import com.nimbusds.oauth2.sdk.token.RefreshToken;
 import com.nimbusds.openid.connect.sdk.AuthenticationErrorResponse;
 import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
 import com.nimbusds.openid.connect.sdk.AuthenticationResponse;
@@ -30,8 +31,11 @@ import com.nimbusds.openid.connect.sdk.UserInfoSuccessResponse;
 import org.apache.commons.codec.binary.Base64;
 import org.iatoki.judgels.commons.AbstractJidCacheService;
 import org.iatoki.judgels.commons.JudgelsUtils;
+import org.iatoki.judgels.jophiel.commons.BaseUserService;
 import org.iatoki.judgels.jophiel.commons.JophielUtils;
+import org.iatoki.judgels.jophiel.commons.UserActivityService;
 import play.Play;
+import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Result;
 
@@ -44,10 +48,16 @@ import java.net.URLEncoder;
 
 public final class JophielClientController extends Controller {
 
-    public static Result login(String returnUri) {
+    private final BaseUserService userService;
+
+    public JophielClientController(BaseUserService userService) {
+        this.userService = userService;
+    }
+
+    public Result login(String returnUri) {
         URI endpoint = JophielUtils.getEndpoint("auth");
         ResponseType responseType = new ResponseType(ResponseType.Value.CODE);
-        Scope scope = Scope.parse("openid");
+        Scope scope = Scope.parse("openid offline_access");
         ClientID clientId = JophielUtils.getClientJid();
         URI redirectUri = getRedirectUri();
 
@@ -66,7 +76,8 @@ public final class JophielClientController extends Controller {
         return redirect(authRequestUri.toString());
     }
 
-    public static Result verify() {
+    @Transactional
+    public Result verify() {
         URI authResponseRequestUri;
 
         try {
@@ -94,7 +105,7 @@ public final class JophielClientController extends Controller {
         URI endpoint = JophielUtils.getEndpoint("token");
         ClientAuthentication clientAuth = new ClientSecretBasic(JophielUtils.getClientJid(), JophielUtils.getClientSecret());
         AuthorizationCodeGrant grant = new AuthorizationCodeGrant(authCode, getRedirectUri());
-        Scope scope = new Scope("openid");
+        Scope scope = new Scope("openid offline_access");
 
         TokenRequest tokenRequest = new TokenRequest(endpoint, clientAuth, grant, scope);
 
@@ -119,8 +130,8 @@ public final class JophielClientController extends Controller {
             throw new RuntimeException(e);
         }
 
-
         AccessToken accessToken = accessTokenResponse.getAccessToken();
+        RefreshToken refreshToken = accessTokenResponse.getRefreshToken();
         JWT idToken = accessTokenResponse.getIDToken();
 
         ReadOnlyJWTClaimsSet claimsSet;
@@ -133,25 +144,17 @@ public final class JophielClientController extends Controller {
         String userJid = claimsSet.getSubject();
         long expirationTime = System.currentTimeMillis() + Long.valueOf(accessTokenResponse.getCustomParams().get("expire_in").toString());
 
-        session().clear();
         session("userJid", userJid);
-        session("accessToken", accessToken.toString());
-        session("expirationTime", "" + expirationTime);
-        session("idToken", idToken.serialize());
+        session("expirationTime", expirationTime + "");
 
-        BearerAccessToken bearerAccessToken;
-        try {
-            bearerAccessToken = BearerAccessToken.parse(httpResponse.getContentAsJSONObject());
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+        userService.upsertUser(userJid, accessToken.toString(), refreshToken.toString(), idToken.serialize(), expirationTime);
 
         refreshUserInfo(accessToken.toString());
 
         return redirect(returnUri);
     }
 
-    public static Result profile(String returnUri) {
+    public Result profile(String returnUri) {
         try {
             returnUri = org.iatoki.judgels.jophiel.commons.controllers.routes.JophielClientController.afterProfile(returnUri).absoluteURL(request());
             URI profileUri = JophielUtils.getEndpoint("serviceProfile/" + URLEncoder.encode(returnUri, "UTF-8"));
@@ -162,12 +165,12 @@ public final class JophielClientController extends Controller {
         }
     }
 
-    public static Result afterProfile(String returnUri) {
+    public Result afterProfile(String returnUri) {
         refreshUserInfo(session("accessToken"));
         return redirect(returnUri);
     }
 
-    public static void refreshUserInfo(String accessToken) {
+    public void refreshUserInfo(String accessToken) {
         HTTPRequest httpRequest;
         try {
             httpRequest = new HTTPRequest(HTTPRequest.Method.GET, JophielUtils.getEndpoint("userinfo").toURL());
@@ -199,7 +202,7 @@ public final class JophielClientController extends Controller {
         }
     }
 
-    public static Result logout(String returnUri) {
+    public Result logout(String returnUri) {
         try {
             URI logoutUri = JophielUtils.getEndpoint("serviceLogout/" + URLEncoder.encode(returnUri, "UTF-8"));
 
@@ -210,7 +213,7 @@ public final class JophielClientController extends Controller {
         }
     }
 
-    private static URI getRedirectUri() {
+    private URI getRedirectUri() {
         try {
             return new URI(routes.JophielClientController.verify().absoluteURL(request()));
         } catch (URISyntaxException e) {

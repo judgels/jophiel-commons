@@ -2,8 +2,6 @@ package org.iatoki.judgels.jophiel.commons;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.nimbusds.oauth2.sdk.auth.Secret;
-import com.nimbusds.oauth2.sdk.http.HTTPRequest;
-import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import org.apache.commons.codec.binary.Base64;
 import org.iatoki.judgels.commons.IdentityUtils;
@@ -12,13 +10,24 @@ import play.Play;
 import play.libs.Json;
 import play.mvc.Http;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public final class JophielUtils {
+
+    private static Lock activityLock = new ReentrantLock();
 
     private JophielUtils() {
         // prevent instantiation
@@ -48,48 +57,96 @@ public final class JophielUtils {
         return Base64.encodeBase64String(getAccessToken().getBytes());
     }
 
-    public static String verifyUsername(String username) {
-        HTTPRequest httpRequest;
-        try {
-            httpRequest = new HTTPRequest(HTTPRequest.Method.GET, getEndpoint("verifyUser").toURL());
-            httpRequest.setAuthorization("Bearer " + JophielUtils.getEncodedAccessToken());
-            httpRequest.setQuery("username=" + username);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
+    public static String getBase64Encoded(String s) {
+        return Base64.encodeBase64String(s.getBytes());
+    }
 
+    public static String verifyUsername(String username) {
         try {
-            HTTPResponse httpResponse = httpRequest.send();
-            if (httpResponse.getStatusCode() == HTTPResponse.SC_OK) {
-                JsonNode jsonNode = Json.parse(httpResponse.getContent());
-                if (jsonNode.get("success").asBoolean()) {
-                    return jsonNode.get("jid").asText();
-                } else {
-                    return null;
-                }
+            URL url = getEndpoint("verifyUsername").toURL();
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Authorization", "Basic " + getClientJid() + ":" + getClientSecret());
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+
+            OutputStream os = connection.getOutputStream();
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+            writer.write("username=" + URLEncoder.encode(username, "UTF-8"));
+            writer.flush();
+            writer.close();
+            os.close();
+
+            connection.connect();
+
+            InputStream is = connection.getInputStream();
+            JsonNode jsonNode = Json.parse(is);
+            is.close();
+
+            if (jsonNode.get("success").asBoolean()) {
+                return jsonNode.get("jid").asText();
             } else {
-                return null;
+                throw null;
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static User getUserByJid(String userJid) {
-        HTTPRequest httpRequest;
+    static boolean sendUserActivities(String accessToken, List<UserActivity> activityLogList) {
         try {
-            httpRequest = new HTTPRequest(HTTPRequest.Method.GET, getEndpoint("userInfoByJid").toURL());
-            httpRequest.setAuthorization("Bearer "+ JophielUtils.getEncodedAccessToken());
-            httpRequest.setQuery("userJid=" + userJid);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
+            URL url = getEndpoint("userActivities").toURL();
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Authorization", "Bearer " + getBase64Encoded(accessToken));
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
 
+            OutputStream os = connection.getOutputStream();
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+            writer.write("userActivities=" + URLEncoder.encode(Json.toJson(activityLogList).toString(), "UTF-8"));
+            writer.flush();
+            writer.close();
+            os.close();
+
+            connection.connect();
+
+            InputStream is = connection.getInputStream();
+            JsonNode jsonNode = Json.parse(is);
+            is.close();
+
+            return jsonNode.get("success").asBoolean();
+        } catch (IOException e) {
+            e.printStackTrace();
+
+            return false;
+        }
+    }
+
+    public static User getUserByUserJid(String userJid) {
         try {
-            HTTPResponse httpResponse = httpRequest.send();
-            if (httpResponse.getStatusCode() == HTTPResponse.SC_OK) {
-                JsonNode response = Json.parse(httpResponse.getContent());
-                User user = new User(response.get("id").asInt(), response.get("jid").asText(), response.get("username").asText(), response.get("name").asText(), response.get("email").asText(), new URL(response.get("profilePictureUrl").asText()));
+            URL url = getEndpoint("userInfoByJid").toURL();
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Authorization", "Basic " + getClientJid() + ":" + getClientSecret());
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+
+            OutputStream os = connection.getOutputStream();
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+            writer.write("userJid=" + URLEncoder.encode(userJid, "UTF-8"));
+            writer.flush();
+            writer.close();
+            os.close();
+
+            connection.connect();
+
+            InputStream is = connection.getInputStream();
+            JsonNode jsonNode = Json.parse(is);
+            is.close();
+
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                User user = new User(jsonNode.get("id").asInt(), jsonNode.get("jid").asText(), jsonNode.get("username").asText(), jsonNode.get("name").asText(), jsonNode.get("email").asText(), new URL(jsonNode.get("profilePictureUrl").asText()));
 
                 return user;
             } else {
@@ -135,4 +192,7 @@ public final class JophielUtils {
         }
     }
 
+    public static Lock getActivityLock() {
+        return activityLock;
+    }
 }
