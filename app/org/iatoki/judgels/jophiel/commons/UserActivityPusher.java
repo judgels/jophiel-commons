@@ -34,7 +34,7 @@ public final class UserActivityPusher implements Runnable {
 
                 for (String userJid : activityLogMap.keySet()) {
                     String accessToken = userService.getUserTokensByUserJid(userJid).getAccessToken();
-                    if (!JophielUtils.sendUserActivities(accessToken, activityLogMap.get(userJid))) {
+                    if ((accessToken != null) && (!JophielUtils.sendUserActivities(accessToken, activityLogMap.get(userJid)))) {
                         userActivityService.addUserActivities(activityLogMap.get(userJid));
                     }
                 }
