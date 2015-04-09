@@ -2,9 +2,12 @@ require(["jquery", "jquery-ui"], function( __tes__ ) {
     $(".user_autocomplete").autocomplete({
         source: function( request, response ) {
             $.ajax({
-                url: jophielAutoCompleteUrl + "?term=" + request.term,
+                url: jophielAutoCompleteUrl,
                 type: 'GET',
-                dataType: "json",
+                data: {
+                    term: request.term
+                },
+                dataType: "jsonp",
                 success: function( data ) {
                     response( data );
                 }
