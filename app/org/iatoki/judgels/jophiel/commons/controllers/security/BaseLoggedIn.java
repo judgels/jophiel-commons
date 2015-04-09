@@ -9,9 +9,13 @@ public abstract class BaseLoggedIn extends Security.Authenticator {
 
     @Override
     public String getUsername(Http.Context context) {
-        if (System.currentTimeMillis() < Long.parseLong(context.session().get("expirationTime"))) {
-            return context.session().get("username");
-        } else {
+        try {
+            if (System.currentTimeMillis() < Long.parseLong(context.session().get("expirationTime"))) {
+                return context.session().get("username");
+            } else {
+                return null;
+            }
+        } catch (NumberFormatException e) {
             return null;
         }
     }
