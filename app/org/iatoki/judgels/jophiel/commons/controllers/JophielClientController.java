@@ -156,7 +156,7 @@ public final class JophielClientController extends Controller {
 
     public Result profile(String returnUri) {
         try {
-            returnUri = org.iatoki.judgels.jophiel.commons.controllers.routes.JophielClientController.afterProfile(returnUri).absoluteURL(request());
+            returnUri = org.iatoki.judgels.jophiel.commons.controllers.routes.JophielClientController.afterProfile(returnUri).absoluteURL(request(), request().secure());
             URI profileUri = JophielUtils.getEndpoint("serviceProfile/" + URLEncoder.encode(returnUri, "UTF-8"));
 
             return redirect(profileUri.toString() + "");
@@ -215,7 +215,7 @@ public final class JophielClientController extends Controller {
 
     private URI getRedirectUri() {
         try {
-            return new URI(routes.JophielClientController.verify().absoluteURL(request()));
+            return new URI(routes.JophielClientController.verify().absoluteURL(request(), request().secure()));
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
