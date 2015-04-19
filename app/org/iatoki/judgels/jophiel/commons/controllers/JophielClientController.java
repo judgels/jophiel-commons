@@ -166,6 +166,7 @@ public final class JophielClientController extends Controller {
         }
     }
 
+    @Transactional
     public Result afterProfile(String returnUri) {
         refreshUserInfo(userService.getUserTokensByUserJid(IdentityUtils.getUserJid()).getAccessToken());
         return redirect(returnUri);
