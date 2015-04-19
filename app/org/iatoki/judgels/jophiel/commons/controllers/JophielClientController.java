@@ -30,6 +30,7 @@ import com.nimbusds.openid.connect.sdk.UserInfoResponse;
 import com.nimbusds.openid.connect.sdk.UserInfoSuccessResponse;
 import org.apache.commons.codec.binary.Base64;
 import org.iatoki.judgels.commons.AbstractJidCacheService;
+import org.iatoki.judgels.commons.IdentityUtils;
 import org.iatoki.judgels.commons.JudgelsUtils;
 import org.iatoki.judgels.jophiel.commons.BaseUserService;
 import org.iatoki.judgels.jophiel.commons.JophielUtils;
@@ -166,7 +167,7 @@ public final class JophielClientController extends Controller {
     }
 
     public Result afterProfile(String returnUri) {
-        refreshUserInfo(session("accessToken"));
+        refreshUserInfo(userService.getUserTokensByUserJid(IdentityUtils.getUserJid()).getAccessToken());
         return redirect(returnUri);
     }
 
