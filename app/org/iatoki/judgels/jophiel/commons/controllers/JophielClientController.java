@@ -46,6 +46,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.util.concurrent.TimeUnit;
 
 public final class JophielClientController extends Controller {
 
@@ -143,7 +144,7 @@ public final class JophielClientController extends Controller {
         }
 
         String userJid = claimsSet.getSubject();
-        long expirationTime = System.currentTimeMillis() + Long.valueOf(accessTokenResponse.getCustomParams().get("expire_in").toString());
+        long expirationTime = System.currentTimeMillis() + TimeUnit.MILLISECONDS.convert(Long.valueOf(accessTokenResponse.getCustomParams().get("expire_in").toString()), TimeUnit.SECONDS);
 
         session("userJid", userJid);
         session("expirationTime", expirationTime + "");

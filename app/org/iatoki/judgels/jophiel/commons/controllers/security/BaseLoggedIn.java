@@ -13,6 +13,7 @@ public abstract class BaseLoggedIn extends Security.Authenticator {
             if (System.currentTimeMillis() < Long.parseLong(context.session().get("expirationTime"))) {
                 return context.session().get("username");
             } else {
+                context.session().clear();
                 return null;
             }
         } catch (NumberFormatException e) {

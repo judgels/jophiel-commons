@@ -33,6 +33,7 @@ public final class UserActivityPusher implements Runnable {
                 }
 
                 for (String userJid : activityLogMap.keySet()) {
+                    // TODO check if access token is valid, if not should use refresh token
                     String accessToken = userService.getUserTokensByUserJid(userJid).getAccessToken();
                     if ((accessToken != null) && (!JophielUtils.sendUserActivities(accessToken, activityLogMap.get(userJid)))) {
                         userActivityService.addUserActivities(activityLogMap.get(userJid));
