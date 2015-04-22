@@ -73,8 +73,7 @@ public final class JophielUtils {
                 return null;
             }
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
+            return null;
         }
     }
 
@@ -102,35 +101,29 @@ public final class JophielUtils {
 
             return jsonNode.get("success").asBoolean();
         } catch (IOException e) {
-            e.printStackTrace();
-
             return false;
         }
     }
 
-    public static User getUserByUserJid(String userJid) {
-        try {
-            URL url = getEndpoint("userInfoByJid?userJid=" + URLEncoder.encode(userJid, "UTF-8")).toURL();
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("Authorization", "Basic " + getBase64Encoded(getClientJid() + ":" + getClientSecret().getValue()));
-            connection.setDoOutput(true);
+    public static User getUserByUserJid(String userJid) throws IOException {
+        URL url = getEndpoint("userInfoByJid?userJid=" + URLEncoder.encode(userJid, "UTF-8")).toURL();
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+        connection.setRequestProperty("Authorization", "Basic " + getBase64Encoded(getClientJid() + ":" + getClientSecret().getValue()));
+        connection.setDoOutput(true);
 
-            connection.connect();
+        connection.connect();
 
-            InputStream is = connection.getInputStream();
-            JsonNode jsonNode = Json.parse(is);
-            is.close();
+        InputStream is = connection.getInputStream();
+        JsonNode jsonNode = Json.parse(is);
+        is.close();
 
-            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                User user = new User(jsonNode.get("id").asInt(), jsonNode.get("jid").asText(), jsonNode.get("username").asText(), jsonNode.get("name").asText(), jsonNode.get("email").asText(), new URL(jsonNode.get("profilePictureUrl").asText()));
+        if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+            User user = new User(jsonNode.get("id").asInt(), jsonNode.get("jid").asText(), jsonNode.get("username").asText(), jsonNode.get("name").asText(), jsonNode.get("email").asText(), new URL(jsonNode.get("profilePictureUrl").asText()));
 
-                return user;
-            } else {
-                throw new RuntimeException();
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            return user;
+        } else {
+            throw new IOException();
         }
     }
 
@@ -164,7 +157,7 @@ public final class JophielUtils {
             try {
                 avatarCacheService.putImageUrl(IdentityUtils.getUserJid(), new URL(Http.Context.current().session().get("avatar")), IdentityUtils.getUserJid(), IdentityUtils.getIpAddress());
             } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
+                throw new IllegalStateException("This exception should not happened", e);
             }
         }
     }
