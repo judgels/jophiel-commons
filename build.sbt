@@ -27,6 +27,11 @@ lazy val frontendcommons = (project in file("."))
     .settings(
         parallelExecution in jacoco.Config := false
     )
+    .settings(
+        publishArtifact in (Compile, packageDoc) := false,
+        publishArtifact in packageDoc := false,
+        sources in (Compile,doc) := Seq.empty
+    )
 
 lazy val playcommons = RootProject(file("../judgels-play-commons"))
 
