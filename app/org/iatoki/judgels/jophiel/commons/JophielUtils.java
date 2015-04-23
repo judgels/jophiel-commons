@@ -165,4 +165,8 @@ public final class JophielUtils {
     public static Lock getActivityLock() {
         return activityLock;
     }
+
+    public static String getSessionVersion() {
+        return "1";
+    }
 }

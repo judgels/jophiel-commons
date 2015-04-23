@@ -148,6 +148,7 @@ public final class JophielClientController extends Controller {
 
         session("userJid", userJid);
         session("expirationTime", expirationTime + "");
+        session("version", JophielUtils.getSessionVersion());
 
         userService.upsertUser(userJid, accessToken.toString(), refreshToken.toString(), idToken.serialize(), expirationTime);
 
