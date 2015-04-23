@@ -8,7 +8,7 @@ lazy val frontendcommons = (project in file("."))
     .aggregate(playcommons, gabrielcommons)
     .settings(
         name := "frontendcommons",
-        version := IO.read(file("version.properties")),
+        version := IO.read(file("version.properties")).trim,
         scalaVersion := "2.11.1",
         libraryDependencies ++= Seq(
             "com.ibm.icu" % "icu4j" % "55.1",
