@@ -166,6 +166,20 @@ public final class JophielUtils {
         return activityLock;
     }
 
+    public static String checkSession(Http.Context context) {
+        try {
+            if ((context.session().containsKey("version")) && (context.session().get("version").equals(JophielUtils.getSessionVersion())) && (context.session().containsKey("expirationTime")) && (System.currentTimeMillis() < Long.parseLong(context.session().get("expirationTime")))) {
+                return context.session().get("username");
+            } else {
+                context.session().remove("username");
+                return null;
+            }
+        } catch (NumberFormatException e) {
+            context.session().remove("username");
+            return null;
+        }
+    }
+
     public static String getSessionVersion() {
         return "1";
     }

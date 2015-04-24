@@ -1,5 +1,6 @@
 package org.iatoki.judgels.jophiel.commons.controllers;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
@@ -37,7 +38,9 @@ import org.iatoki.judgels.jophiel.commons.JophielUtils;
 import org.iatoki.judgels.jophiel.commons.UserActivityService;
 import play.Play;
 import play.db.jpa.Transactional;
+import play.libs.Json;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Result;
 
 import java.io.IOException;
@@ -215,6 +218,16 @@ public final class JophielClientController extends Controller {
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Result checkLogin() {
+        ObjectNode ret = Json.newObject();
+        if (JophielUtils.checkSession(Http.Context.current()) != null) {
+            ret.put("success", true);
+        } else {
+            ret.put("success", false);
+        }
+        return ok(ret);
     }
 
     private URI getRedirectUri() {

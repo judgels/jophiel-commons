@@ -2,6 +2,7 @@
 ->          /                                                        commons.Routes
 
 GET        /login                      @org.iatoki.judgels.jophiel.commons.controllers.JophielClientController.login(returnUri: String)
+GET        /checkLogin                 @org.iatoki.judgels.jophiel.commons.controllers.JophielClientController.checkLogin()
 GET        /profile                    @org.iatoki.judgels.jophiel.commons.controllers.JophielClientController.profile(returnUri: String)
 GET        /profile/after/:returnUri   @org.iatoki.judgels.jophiel.commons.controllers.JophielClientController.afterProfile(returnUri: String)
 GET        /verify                     @org.iatoki.judgels.jophiel.commons.controllers.JophielClientController.verify()

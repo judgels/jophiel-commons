@@ -1,0 +1,14 @@
+@(checkInterval: Long, refreshAuthURL: String)(content: Html)
+
+@import play.i18n.Messages
+
+@content
+
+<iframe id="check-login" class="hidden" src="@refreshAuthURL"></iframe>
+<script type="text/javascript">
+    var refreshAuthUrl = "@refreshAuthURL";
+    var confirmMessage = "@Messages.get("session.timeout")";
+    var checkLoginUrl = "@org.iatoki.judgels.jophiel.commons.controllers.routes.JophielClientController.checkLogin().toString()";
+    var checkInterval = @checkInterval;
+</script>
+<script type="text/javascript" src="@controllers.routes.Assets.versioned("javascripts/checkLogin.js")"></script>
