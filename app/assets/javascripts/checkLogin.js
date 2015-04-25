@@ -2,7 +2,7 @@ require(["jquery"], function( __jquery__ ) {
     $(document).ready(function () {
         $("#check-login").load(function() {
             $.get(checkLoginUrl, function(data) {
-                if (!data.success) {
+                if ((data.success != null) && (!data.success)) {
                     alert(confirmMessage);
                     location.reload();
                 }
