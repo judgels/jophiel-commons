@@ -220,16 +220,6 @@ public final class JophielClientController extends Controller {
         }
     }
 
-    public Result checkLogin() {
-        ObjectNode ret = Json.newObject();
-        if (JophielUtils.checkSession(Http.Context.current()) != null) {
-            ret.put("success", true);
-        } else {
-            ret.put("success", false);
-        }
-        return ok(ret);
-    }
-
     private URI getRedirectUri() {
         try {
             return new URI(routes.JophielClientController.verify().absoluteURL(request(), request().secure()));
