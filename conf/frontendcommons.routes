@@ -1,5 +1,5 @@
 
-->          /                                                        commons.Routes
+->          /                          commons.Routes
 
 GET        /login                      @org.iatoki.judgels.jophiel.commons.controllers.JophielClientController.login(returnUri: String)
 GET        /profile                    @org.iatoki.judgels.jophiel.commons.controllers.JophielClientController.profile(returnUri: String)
