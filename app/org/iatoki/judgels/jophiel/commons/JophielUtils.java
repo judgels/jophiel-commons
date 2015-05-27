@@ -5,7 +5,6 @@ import com.nimbusds.oauth2.sdk.auth.Secret;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import org.apache.commons.codec.binary.Base64;
 import org.iatoki.judgels.commons.IdentityUtils;
-import org.iatoki.judgels.jophiel.User;
 import play.Play;
 import play.libs.Json;
 import play.mvc.Http;
@@ -119,7 +118,7 @@ public final class JophielUtils {
         is.close();
 
         if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-            User user = new User(jsonNode.get("id").asInt(), jsonNode.get("jid").asText(), jsonNode.get("username").asText(), jsonNode.get("name").asText(), jsonNode.get("email").asText(), new URL(jsonNode.get("profilePictureUrl").asText()));
+            User user = new User(jsonNode.get("id").asInt(), jsonNode.get("jid").asText(), jsonNode.get("username").asText(), jsonNode.get("name").asText(), jsonNode.get("email").asText(), new URL(jsonNode.get("profilePictureUrl").asText()), null);
 
             return user;
         } else {
