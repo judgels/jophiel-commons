@@ -11,9 +11,11 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class AbstractAvatarCacheService<M extends AbstractAvatarCacheModel> {
-    private BaseAvatarCacheDao<M> avatarCacheDao;
+    private final Jophiel jophiel;
+    private final BaseAvatarCacheDao<M> avatarCacheDao;
 
-    public final void setDao(BaseAvatarCacheDao<M> avatarCacheDao) {
+    public AbstractAvatarCacheService(Jophiel jophiel, BaseAvatarCacheDao<M> avatarCacheDao) {
+        this.jophiel = jophiel;
         this.avatarCacheDao = avatarCacheDao;
     }
 
@@ -28,7 +30,7 @@ public abstract class AbstractAvatarCacheService<M extends AbstractAvatarCacheMo
     public final URL getAvatarUrl(String userJid) {
         try {
             if (!avatarCacheDao.existsByUserJid(userJid)) {
-                return JophielUtils.getDefaultAvatarUrl();
+                return jophiel.getDefaultAvatarUrl();
             } else {
                 M jidCacheModel = avatarCacheDao.findByUserJid(userJid);
                 return new URL(jidCacheModel.avatarUrl);
@@ -50,7 +52,7 @@ public abstract class AbstractAvatarCacheService<M extends AbstractAvatarCacheMo
 
             for (String jid : userJids) {
                 if (!displayNamesMap.containsKey(jid)) {
-                    displayNamesMap.put(jid, JophielUtils.getDefaultAvatarUrl());
+                    displayNamesMap.put(jid, jophiel.getDefaultAvatarUrl());
                 }
             }
 

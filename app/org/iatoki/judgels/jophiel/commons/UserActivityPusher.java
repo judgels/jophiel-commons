@@ -9,10 +9,12 @@ import java.util.Map;
 
 public final class UserActivityPusher implements Runnable {
 
+    private final Jophiel jophiel;
     private final BaseUserService userService;
     private final UserActivityService userActivityService;
 
-    public UserActivityPusher(BaseUserService userService, UserActivityService userActivityService) {
+    public UserActivityPusher(Jophiel jophiel, BaseUserService userService, UserActivityService userActivityService) {
+        this.jophiel = jophiel;
         this.userService = userService;
         this.userActivityService = userActivityService;
     }
@@ -35,7 +37,7 @@ public final class UserActivityPusher implements Runnable {
                 for (String userJid : activityLogMap.keySet()) {
                     // TODO check if access token is valid, if not should use refresh token
                     String accessToken = userService.getUserTokensByUserJid(userJid).getAccessToken();
-                    if ((accessToken != null) && (!JophielUtils.sendUserActivities(accessToken, activityLogMap.get(userJid)))) {
+                    if ((accessToken != null) && (!jophiel.sendUserActivities(accessToken, activityLogMap.get(userJid)))) {
                         userActivityService.addUserActivities(activityLogMap.get(userJid));
                     }
                 }
