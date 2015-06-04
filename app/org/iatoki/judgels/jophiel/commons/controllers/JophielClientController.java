@@ -108,7 +108,7 @@ public final class JophielClientController extends Controller {
         URI endpoint = jophiel.getEndpoint("token");
         ClientAuthentication clientAuth = new ClientSecretBasic(new ClientID(jophiel.getClientJid()), new Secret(jophiel.getClientSecret()));
         AuthorizationCodeGrant grant = new AuthorizationCodeGrant(authCode, getRedirectUri());
-        Scope scope = new Scope("openid offline_access");
+        Scope scope = Scope.parse("openid offline_access");
 
         TokenRequest tokenRequest = new TokenRequest(endpoint, clientAuth, grant, scope);
 
