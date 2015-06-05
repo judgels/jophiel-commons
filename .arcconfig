@@ -1,6 +1,0 @@
-{
-    "project.name" : "judgels-frontend-commons",
-    "load" : ["iatoki-commons/phutil-libraries"],
-    "unit.engine" : "JenkinsUnitEngine",
-    "events.listeners" : ["JenkinsDiffEventListener"]
-}
