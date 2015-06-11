@@ -24,15 +24,15 @@ import java.util.concurrent.locks.ReentrantLock;
 public final class Jophiel {
 
     private final Lock activityLock;
+    private final String baseUrl;
     private final String clientJid;
     private final String clientSecret;
-    private final String baseUrl;
 
-    public Jophiel(String clientJid, String clientSecret, String baseUrl) {
+    public Jophiel(String baseUrl, String clientJid, String clientSecret) {
         this.activityLock = new ReentrantLock();
+        this.baseUrl = baseUrl;
         this.clientJid = clientJid;
         this.clientSecret = clientSecret;
-        this.baseUrl = baseUrl;
     }
 
     public String verifyUsername(String username) {
