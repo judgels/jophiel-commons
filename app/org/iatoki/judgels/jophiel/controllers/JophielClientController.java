@@ -1,4 +1,4 @@
-package org.iatoki.judgels.jophiel.commons.controllers;
+package org.iatoki.judgels.jophiel.controllers;
 
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
@@ -30,13 +30,10 @@ import com.nimbusds.openid.connect.sdk.UserInfoResponse;
 import com.nimbusds.openid.connect.sdk.UserInfoSuccessResponse;
 import org.apache.commons.codec.binary.Base64;
 import org.iatoki.judgels.commons.IdentityUtils;
-import org.iatoki.judgels.jophiel.commons.BaseUserService;
-import org.iatoki.judgels.jophiel.commons.Jophiel;
-import play.Play;
+import org.iatoki.judgels.jophiel.services.BaseUserService;
+import org.iatoki.judgels.jophiel.Jophiel;
 import play.db.jpa.Transactional;
-import play.libs.Json;
 import play.mvc.Controller;
-import play.mvc.Http;
 import play.mvc.Result;
 
 import java.io.IOException;
@@ -160,7 +157,7 @@ public final class JophielClientController extends Controller {
 
     public Result profile(String returnUri) {
         try {
-            returnUri = org.iatoki.judgels.jophiel.commons.controllers.routes.JophielClientController.afterProfile(returnUri).absoluteURL(request(), request().secure());
+            returnUri = org.iatoki.judgels.jophiel.controllers.routes.JophielClientController.afterProfile(returnUri).absoluteURL(request(), request().secure());
             URI profileUri = jophiel.getEndpoint("serviceProfile/" + URLEncoder.encode(returnUri, "UTF-8"));
 
             return redirect(profileUri.toString() + "");

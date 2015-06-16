@@ -1,7 +1,7 @@
-package org.iatoki.judgels.jophiel.commons.models.daos.interfaces;
+package org.iatoki.judgels.jophiel.models.daos;
 
 import org.iatoki.judgels.commons.models.daos.interfaces.Dao;
-import org.iatoki.judgels.jophiel.commons.models.domains.AbstractAvatarCacheModel;
+import org.iatoki.judgels.jophiel.models.entities.AbstractAvatarCacheModel;
 
 import java.util.List;
 

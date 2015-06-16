@@ -1,11 +1,9 @@
-package org.iatoki.judgels.jophiel.commons;
+package org.iatoki.judgels.jophiel;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.nimbusds.oauth2.sdk.auth.Secret;
-import com.nimbusds.oauth2.sdk.id.ClientID;
 import org.apache.commons.codec.binary.Base64;
 import org.iatoki.judgels.commons.IdentityUtils;
-import play.Play;
+import org.iatoki.judgels.jophiel.services.AbstractAvatarCacheService;
 import play.libs.Json;
 import play.mvc.Http;
 
@@ -24,41 +22,26 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-@Deprecated
-public final class JophielUtils {
+public final class Jophiel {
 
-    private static Lock activityLock = new ReentrantLock();
+    private final Lock activityLock;
+    private final String baseUrl;
+    private final String clientJid;
+    private final String clientSecret;
 
-    private JophielUtils() {
-        // prevent instantiation
+    public Jophiel(String baseUrl, String clientJid, String clientSecret) {
+        this.activityLock = new ReentrantLock();
+        this.baseUrl = baseUrl;
+        this.clientJid = clientJid;
+        this.clientSecret = clientSecret;
     }
 
-    public static ClientID getClientJid() {
-        String clientId = Play.application().configuration().getString("jophiel.clientJid");
-        if (clientId == null) {
-            throw new IllegalStateException("jophiel.clientJid not found in configuration");
-        }
-        return new ClientID(clientId);
-    }
-
-    public static Secret getClientSecret() {
-        String clientSecret = Play.application().configuration().getString("jophiel.clientSecret");
-        if (clientSecret == null) {
-            throw new IllegalStateException("jophiel.clientSecret not found in configuration");
-        }
-        return new Secret(clientSecret);
-    }
-
-    public static String getBase64Encoded(String s) {
-        return Base64.encodeBase64String(s.getBytes());
-    }
-
-    public static String verifyUsername(String username) {
+    public String verifyUsername(String username) {
         try {
             URL url = getEndpoint("verifyUsername?username=" + URLEncoder.encode(username, "UTF-8")).toURL();
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
-            connection.setRequestProperty("Authorization", "Basic " + getBase64Encoded(getClientJid() + ":" + getClientSecret().getValue()));
+            connection.setRequestProperty("Authorization", "Basic " + getBase64Encoded(clientJid + ":" + clientSecret));
             connection.setDoOutput(true);
 
             connection.connect();
@@ -77,7 +60,7 @@ public final class JophielUtils {
         }
     }
 
-    static boolean sendUserActivities(String accessToken, List<UserActivity> activityLogList) {
+    boolean sendUserActivities(String accessToken, List<UserActivity> activityLogList) {
         try {
             URL url = getEndpoint("userActivities").toURL();
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -105,11 +88,11 @@ public final class JophielUtils {
         }
     }
 
-    public static User getUserByUserJid(String userJid) throws IOException {
+    public User getUserByUserJid(String userJid) throws IOException {
         URL url = getEndpoint("userInfoByJid?userJid=" + URLEncoder.encode(userJid, "UTF-8")).toURL();
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
-        connection.setRequestProperty("Authorization", "Basic " + getBase64Encoded(getClientJid() + ":" + getClientSecret().getValue()));
+        connection.setRequestProperty("Authorization", "Basic " + getBase64Encoded(clientJid + ":" + clientSecret));
         connection.setDoOutput(true);
 
         connection.connect();
@@ -127,7 +110,7 @@ public final class JophielUtils {
         }
     }
 
-    public static String getAutoCompleteEndPoint() {
+    public String getAutoCompleteEndPoint() {
         try {
             return getEndpoint("userAutoComplete").toURL().toString();
         } catch (MalformedURLException e) {
@@ -135,8 +118,7 @@ public final class JophielUtils {
         }
     }
 
-    public static URI getEndpoint(String service) {
-        String baseUrl = Play.application().configuration().getString("jophiel.baseUrl");
+    public URI getEndpoint(String service) {
         if (baseUrl == null) {
             throw new IllegalStateException("jophiel.baseUrl not found in configuration");
         }
@@ -148,8 +130,20 @@ public final class JophielUtils {
         }
     }
 
-    public static URL getDefaultAvatarUrl() throws MalformedURLException {
+    public URL getDefaultAvatarUrl() throws MalformedURLException {
         return getEndpoint("assets/images/avatar/avatar-default.png").toURL();
+    }
+
+    public Lock getActivityLock() {
+        return activityLock;
+    }
+
+    public String getClientJid() {
+        return clientJid;
+    }
+
+    public String getClientSecret() {
+        return clientSecret;
     }
 
     public static void updateUserAvatarCache(AbstractAvatarCacheService<?> avatarCacheService) {
@@ -162,11 +156,11 @@ public final class JophielUtils {
         }
     }
 
-    public static Lock getActivityLock() {
-        return activityLock;
-    }
-
     public static String getSessionVersion() {
         return "1";
+    }
+
+    private String getBase64Encoded(String s) {
+        return Base64.encodeBase64String(s.getBytes());
     }
 }

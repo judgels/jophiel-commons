@@ -1,4 +1,6 @@
-package org.iatoki.judgels.jophiel.commons;
+package org.iatoki.judgels.jophiel.services;
+
+import org.iatoki.judgels.jophiel.UserActivity;
 
 import java.util.List;
 

@@ -1,9 +1,10 @@
-package org.iatoki.judgels.jophiel.commons;
+package org.iatoki.judgels.jophiel.services;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import org.iatoki.judgels.jophiel.commons.models.daos.interfaces.BaseAvatarCacheDao;
-import org.iatoki.judgels.jophiel.commons.models.domains.AbstractAvatarCacheModel;
+import org.iatoki.judgels.jophiel.Jophiel;
+import org.iatoki.judgels.jophiel.models.daos.BaseAvatarCacheDao;
+import org.iatoki.judgels.jophiel.models.entities.AbstractAvatarCacheModel;
 
 import java.net.MalformedURLException;
 import java.net.URL;

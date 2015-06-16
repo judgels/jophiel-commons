@@ -1,4 +1,4 @@
-package org.iatoki.judgels.jophiel.commons;
+package org.iatoki.judgels.jophiel;
 
 import java.net.URL;
 import java.util.List;

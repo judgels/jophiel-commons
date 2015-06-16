@@ -1,6 +1,9 @@
-package org.iatoki.judgels.jophiel.commons;
+package org.iatoki.judgels.jophiel.services.impls;
 
 import com.google.common.collect.Lists;
+import org.iatoki.judgels.jophiel.Jophiel;
+import org.iatoki.judgels.jophiel.UserActivity;
+import org.iatoki.judgels.jophiel.services.UserActivityService;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;

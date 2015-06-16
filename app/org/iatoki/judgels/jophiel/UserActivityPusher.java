@@ -1,6 +1,8 @@
-package org.iatoki.judgels.jophiel.commons;
+package org.iatoki.judgels.jophiel;
 
 import com.google.common.collect.Lists;
+import org.iatoki.judgels.jophiel.services.BaseUserService;
+import org.iatoki.judgels.jophiel.services.UserActivityService;
 import play.db.jpa.JPA;
 
 import java.util.HashMap;

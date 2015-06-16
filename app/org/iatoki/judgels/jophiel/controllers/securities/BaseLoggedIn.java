@@ -1,6 +1,6 @@
-package org.iatoki.judgels.jophiel.commons.controllers.security;
+package org.iatoki.judgels.jophiel.controllers.securities;
 
-import org.iatoki.judgels.jophiel.commons.Jophiel;
+import org.iatoki.judgels.jophiel.Jophiel;
 import play.mvc.Call;
 import play.mvc.Http;
 import play.mvc.Result;

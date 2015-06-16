@@ -1,4 +1,4 @@
-package org.iatoki.judgels.jophiel.commons.models.domains;
+package org.iatoki.judgels.jophiel.models.entities;
 
 import org.iatoki.judgels.commons.models.domains.AbstractModel_;
 

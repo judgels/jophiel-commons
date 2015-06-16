@@ -1,10 +1,10 @@
-package org.iatoki.judgels.jophiel.commons.models.daos.hibernate;
+package org.iatoki.judgels.jophiel.models.daos.impls;
 
 import com.google.common.collect.ImmutableList;
 import org.iatoki.judgels.commons.models.daos.hibernate.AbstractHibernateDao;
-import org.iatoki.judgels.jophiel.commons.models.daos.interfaces.BaseAvatarCacheDao;
-import org.iatoki.judgels.jophiel.commons.models.domains.AbstractAvatarCacheModel;
-import org.iatoki.judgels.jophiel.commons.models.domains.AbstractAvatarCacheModel_;
+import org.iatoki.judgels.jophiel.models.daos.BaseAvatarCacheDao;
+import org.iatoki.judgels.jophiel.models.entities.AbstractAvatarCacheModel;
+import org.iatoki.judgels.jophiel.models.entities.AbstractAvatarCacheModel_;
 import play.db.jpa.JPA;
 
 import javax.persistence.criteria.CriteriaBuilder;
