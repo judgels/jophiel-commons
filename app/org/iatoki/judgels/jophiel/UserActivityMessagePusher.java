@@ -2,33 +2,33 @@ package org.iatoki.judgels.jophiel;
 
 import com.google.common.collect.Lists;
 import org.iatoki.judgels.jophiel.services.BaseUserService;
-import org.iatoki.judgels.jophiel.services.UserActivityService;
+import org.iatoki.judgels.jophiel.services.UserActivityMessageService;
 import play.db.jpa.JPA;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class UserActivityPusher implements Runnable {
+public final class UserActivityMessagePusher implements Runnable {
 
     private final Jophiel jophiel;
     private final BaseUserService userService;
-    private final UserActivityService userActivityService;
+    private final UserActivityMessageService userActivityMessageService;
 
-    public UserActivityPusher(Jophiel jophiel, BaseUserService userService, UserActivityService userActivityService) {
+    public UserActivityMessagePusher(Jophiel jophiel, BaseUserService userService, UserActivityMessageService userActivityMessageService) {
         this.jophiel = jophiel;
         this.userService = userService;
-        this.userActivityService = userActivityService;
+        this.userActivityMessageService = userActivityMessageService;
     }
 
     @Override
     public void run() {
         JPA.withTransaction(() -> {
             try {
-                List<UserActivity> userActivities = userActivityService.getUserActivities();
-                Map<String, List<UserActivity>> activityLogMap = new HashMap<>();
+                List<UserActivityMessage> userActivities = userActivityMessageService.getUserActivityMessages();
+                Map<String, List<UserActivityMessage>> activityLogMap = new HashMap<>();
 
-                for (UserActivity activityLog : userActivities) {
+                for (UserActivityMessage activityLog : userActivities) {
                     if (activityLogMap.containsKey(activityLog.getUserJid())) {
                         activityLogMap.get(activityLog.getUserJid()).add(activityLog);
                     } else {
@@ -39,8 +39,8 @@ public final class UserActivityPusher implements Runnable {
                 for (String userJid : activityLogMap.keySet()) {
                     // TODO check if access token is valid, if not should use refresh token
                     String accessToken = userService.getUserTokensByUserJid(userJid).getAccessToken();
-                    if ((accessToken != null) && (!jophiel.sendUserActivities(accessToken, activityLogMap.get(userJid)))) {
-                        userActivityService.addUserActivities(activityLogMap.get(userJid));
+                    if ((accessToken != null) && (!jophiel.sendUserActivityMessages(accessToken, activityLogMap.get(userJid)))) {
+                        userActivityMessageService.addUserActivityMessages(activityLogMap.get(userJid));
                     }
                 }
             } catch (InterruptedException e) {

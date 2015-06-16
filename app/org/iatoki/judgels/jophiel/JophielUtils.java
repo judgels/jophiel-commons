@@ -78,7 +78,7 @@ public final class JophielUtils {
         }
     }
 
-    static boolean sendUserActivities(String accessToken, List<UserActivity> activityLogList) {
+    static boolean sendUserActivities(String accessToken, List<UserActivityMessage> activityLogList) {
         try {
             URL url = getEndpoint("userActivities").toURL();
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();

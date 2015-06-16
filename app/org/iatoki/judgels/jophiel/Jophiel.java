@@ -60,7 +60,7 @@ public final class Jophiel {
         }
     }
 
-    boolean sendUserActivities(String accessToken, List<UserActivity> activityLogList) {
+    boolean sendUserActivityMessages(String accessToken, List<UserActivityMessage> userActivityMessages) {
         try {
             URL url = getEndpoint("userActivities").toURL();
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -71,7 +71,7 @@ public final class Jophiel {
 
             OutputStream os = connection.getOutputStream();
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-            writer.write("userActivities=" + URLEncoder.encode(Json.toJson(activityLogList).toString(), "UTF-8"));
+            writer.write("userActivities=" + URLEncoder.encode(Json.toJson(userActivityMessages).toString(), "UTF-8"));
             writer.flush();
             writer.close();
             os.close();
