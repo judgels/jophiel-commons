@@ -106,7 +106,7 @@ public final class JophielUtils {
         }
     }
 
-    public static User getUserByUserJid(String userJid) throws IOException {
+    public static UserInfo getUserByUserJid(String userJid) throws IOException {
         URL url = getEndpoint("userInfoByJid?userJid=" + URLEncoder.encode(userJid, "UTF-8")).toURL();
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
@@ -120,7 +120,7 @@ public final class JophielUtils {
         is.close();
 
         if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-            User user = new User(jsonNode.get("id").asInt(), jsonNode.get("jid").asText(), jsonNode.get("username").asText(), jsonNode.get("name").asText(), jsonNode.get("email").asText(), new URL(jsonNode.get("profilePictureUrl").asText()), null);
+            UserInfo user = new UserInfo(jsonNode.get("id").asInt(), jsonNode.get("jid").asText(), jsonNode.get("username").asText(), jsonNode.get("name").asText(), jsonNode.get("email").asText(), new URL(jsonNode.get("profilePictureUrl").asText()), null);
 
             return user;
         } else {

@@ -3,7 +3,7 @@ package org.iatoki.judgels.jophiel;
 import java.net.URL;
 import java.util.List;
 
-public final class User {
+public final class UserInfo {
 
     private long id;
 
@@ -19,14 +19,14 @@ public final class User {
 
     private List<String> roles;
 
-    public User(String jid, String username, String name, URL profilePictureUrl) {
+    public UserInfo(String jid, String username, String name, URL profilePictureUrl) {
         this.jid = jid;
         this.username = username;
         this.name = name;
         this.profilePictureUrl = profilePictureUrl;
     }
 
-    public User(long id, String jid, String username, String name, String email, URL profilePictureUrl, List<String> roles) {
+    public UserInfo(long id, String jid, String username, String name, String email, URL profilePictureUrl, List<String> roles) {
         this.id = id;
         this.jid = jid;
         this.username = username;
