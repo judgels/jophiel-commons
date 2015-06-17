@@ -1,149 +1,238 @@
 package org.iatoki.judgels.jophiel;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.collect.ImmutableList;
+import com.google.gson.Gson;
+import com.nimbusds.oauth2.sdk.AuthorizationCode;
+import com.nimbusds.oauth2.sdk.AuthorizationCodeGrant;
+import com.nimbusds.oauth2.sdk.ParseException;
+import com.nimbusds.oauth2.sdk.ResponseType;
+import com.nimbusds.oauth2.sdk.Scope;
+import com.nimbusds.oauth2.sdk.SerializeException;
+import com.nimbusds.oauth2.sdk.TokenRequest;
+import com.nimbusds.oauth2.sdk.auth.ClientAuthentication;
+import com.nimbusds.oauth2.sdk.auth.ClientSecretBasic;
+import com.nimbusds.oauth2.sdk.auth.Secret;
+import com.nimbusds.oauth2.sdk.http.HTTPRequest;
+import com.nimbusds.oauth2.sdk.http.HTTPResponse;
+import com.nimbusds.oauth2.sdk.id.ClientID;
+import com.nimbusds.oauth2.sdk.id.State;
+import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
+import com.nimbusds.openid.connect.sdk.AuthenticationResponse;
+import com.nimbusds.openid.connect.sdk.AuthenticationResponseParser;
+import com.nimbusds.openid.connect.sdk.Nonce;
+import com.nimbusds.openid.connect.sdk.OIDCAccessTokenResponse;
+import com.nimbusds.openid.connect.sdk.UserInfoResponse;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.message.BasicNameValuePair;
+import org.iatoki.judgels.AbstractJudgelsClient;
 import org.iatoki.judgels.commons.IdentityUtils;
 import org.iatoki.judgels.jophiel.services.AbstractAvatarCacheService;
-import play.libs.Json;
 import play.mvc.Http;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public final class Jophiel {
+public final class Jophiel extends AbstractJudgelsClient {
 
+    private final ClientID clientId;
+    private final Secret clientSecret;
     private final Lock activityLock;
-    private final String baseUrl;
-    private final String clientJid;
-    private final String clientSecret;
 
     public Jophiel(String baseUrl, String clientJid, String clientSecret) {
+        super(baseUrl, clientJid, clientSecret);
+        this.clientId = new ClientID(clientJid);
+        this.clientSecret = new Secret(clientSecret);
         this.activityLock = new ReentrantLock();
-        this.baseUrl = baseUrl;
-        this.clientJid = clientJid;
-        this.clientSecret = clientSecret;
     }
 
-    public String verifyUsername(String username) {
-        try {
-            URL url = getEndpoint("verifyUsername?username=" + URLEncoder.encode(username, "UTF-8")).toURL();
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("Authorization", "Basic " + getBase64Encoded(clientJid + ":" + clientSecret));
-            connection.setDoOutput(true);
+    boolean sendUserActivityMessages(String accessToken, List<UserActivityMessage> activityLogList) throws IOException {
+        CloseableHttpClient httpClient = getHttpClient();
 
-            connection.connect();
+        List<NameValuePair> params = ImmutableList.of(
+              new BasicNameValuePair("userActivities", new Gson().toJson(activityLogList))
+        );
 
-            InputStream is = connection.getInputStream();
-            JsonNode jsonNode = Json.parse(is);
-            is.close();
+        HttpPost request = new HttpPost(getEndpoint("/verifyUsername"));
+        request.setEntity(new UrlEncodedFormEntity(params));
+        request.setHeader(new BasicHeader("Authorization", "Bearer " + Base64.encodeBase64String(accessToken.getBytes())));
 
-            if (jsonNode.get("success").asBoolean()) {
-                return jsonNode.get("jid").asText();
-            } else {
-                return null;
+        boolean success = false;
+        String result = executeHttpRequest(httpClient, request);
+        if (result != null) {
+            BasicResponse response = new Gson().fromJson(result, BasicResponse.class);
+            if (response.success) {
+                success = true;
             }
-        } catch (IOException e) {
-            return null;
         }
+
+        return success;
     }
 
-    boolean sendUserActivityMessages(String accessToken, List<UserActivityMessage> userActivityMessages) {
-        try {
-            URL url = getEndpoint("userActivities").toURL();
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Authorization", "Bearer " + getBase64Encoded(accessToken));
-            connection.setDoInput(true);
-            connection.setDoOutput(true);
+    public String verifyUsername(String username) throws IOException {
+        CloseableHttpClient httpClient = getHttpClient();
 
-            OutputStream os = connection.getOutputStream();
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-            writer.write("userActivities=" + URLEncoder.encode(Json.toJson(userActivityMessages).toString(), "UTF-8"));
-            writer.flush();
-            writer.close();
-            os.close();
+        List<NameValuePair> params = ImmutableList.of(
+              new BasicNameValuePair("username", username)
+        );
 
-            connection.connect();
+        HttpGet request = new HttpGet(getEndpoint("/verifyUsername", params));
 
-            InputStream is = connection.getInputStream();
-            JsonNode jsonNode = Json.parse(is);
-            is.close();
-
-            return jsonNode.get("success").asBoolean();
-        } catch (IOException e) {
-            return false;
+        String result = executeHttpRequest(httpClient, request);
+        if (result != null) {
+            UserVerifyResponse verifyResponse = new Gson().fromJson(result, UserVerifyResponse.class);
+            if (verifyResponse.success) {
+                result = verifyResponse.jid;
+            } else {
+                result = null;
+            }
         }
+
+        return result;
     }
 
     public UserInfo getUserByUserJid(String userJid) throws IOException {
-        URL url = getEndpoint("userInfoByJid?userJid=" + URLEncoder.encode(userJid, "UTF-8")).toURL();
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("GET");
-        connection.setRequestProperty("Authorization", "Basic " + getBase64Encoded(clientJid + ":" + clientSecret));
-        connection.setDoOutput(true);
+        CloseableHttpClient httpClient = getHttpClient();
 
-        connection.connect();
+        List<NameValuePair> params = ImmutableList.of(
+              new BasicNameValuePair("userJid", userJid)
+        );
 
-        InputStream is = connection.getInputStream();
-        JsonNode jsonNode = Json.parse(is);
-        is.close();
+        HttpGet request = new HttpGet(getEndpoint("/userInfoByJid", params));
 
-        if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-            UserInfo user = new UserInfo(jsonNode.get("id").asInt(), jsonNode.get("jid").asText(), jsonNode.get("username").asText(), jsonNode.get("name").asText(), jsonNode.get("email").asText(), new URL(jsonNode.get("profilePictureUrl").asText()), null);
+        UserInfo userInfo = null;
+        String result = executeHttpRequest(httpClient, request);
+        if (result != null) {
+            userInfo = new Gson().fromJson(result, UserInfo.class);
+        }
 
-            return user;
-        } else {
-            throw new IOException();
+        return userInfo;
+    }
+
+    public URI getAuthRequestUri(URI redirectUri, String returnUri) {
+        URI endpoint = getEndpoint("/auth");
+        ResponseType responseType = new ResponseType(ResponseType.Value.CODE);
+        Scope scope = Scope.parse("openid offline_access");
+
+        State state = new State(returnUri);
+        Nonce nonce = new Nonce();
+
+        AuthenticationRequest authRequest = new AuthenticationRequest(endpoint, responseType, scope, clientId, redirectUri, state, nonce);
+
+        URI authRequestUri;
+        try {
+            authRequestUri = authRequest.toURI();
+        } catch (SerializeException e) {
+            throw new RuntimeException(e);
+        }
+
+        return authRequestUri;
+    }
+
+    public AuthenticationResponse parseAuthResponse(URI responseUri) {
+        AuthenticationResponse authResponse;
+        try {
+            authResponse = AuthenticationResponseParser.parse(responseUri);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+        return authResponse;
+    }
+
+    public OIDCAccessTokenResponse sendAccessTokenRequest(AuthorizationCode authCode, URI redirectUri) {
+        URI endpoint = getEndpoint("/token");
+
+        ClientAuthentication clientAuth = new ClientSecretBasic(clientId, clientSecret);
+        AuthorizationCodeGrant grant = new AuthorizationCodeGrant(authCode, redirectUri);
+        Scope scope = Scope.parse("openid offline_access");
+
+        TokenRequest tokenRequest = new TokenRequest(endpoint, clientAuth, grant, scope);
+
+        HTTPRequest httpRequest;
+        try {
+            httpRequest = tokenRequest.toHTTPRequest();
+        } catch (SerializeException e) {
+            throw new RuntimeException(e);
+        }
+
+        HTTPResponse httpResponse;
+        try {
+            httpResponse = httpRequest.send();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        OIDCAccessTokenResponse accessTokenResponse;
+        try {
+            accessTokenResponse = OIDCAccessTokenResponse.parse(httpResponse);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+        return accessTokenResponse;
+    }
+
+    public URI getServiceProfileUri(String returnUri) {
+        return getEndpoint("/serviceProfile/" + returnUri);
+    }
+
+    public URI getServiceLogout(String returnUri) {
+        return getEndpoint("/serviceLogout/" + returnUri);
+    }
+
+    public UserInfoResponse getUserInfoRequest(String accessToken) {
+        HTTPRequest httpRequest;
+        try {
+            httpRequest = new HTTPRequest(HTTPRequest.Method.GET, getEndpoint("/userinfo").toURL());
+            httpRequest.setAuthorization("Bearer "+ Base64.encodeBase64String(accessToken.getBytes()));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+
+        HTTPResponse httpResponse;
+        try {
+            httpResponse = httpRequest.send();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            return UserInfoResponse.parse(httpResponse);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
         }
     }
 
     public String getAutoCompleteEndPoint() {
         try {
-            return getEndpoint("userAutoComplete").toURL().toString();
+            return getEndpoint("/userAutoComplete").toURL().toString();
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public URI getEndpoint(String service) {
-        if (baseUrl == null) {
-            throw new IllegalStateException("jophiel.baseUrl not found in configuration");
-        }
-
-        try {
-            return new URI(baseUrl + "/" + service);
-        } catch (URISyntaxException e) {
-            throw new IllegalStateException("jophiel.baseUrl malformed in configuration");
-        }
-    }
-
     public URL getDefaultAvatarUrl() throws MalformedURLException {
-        return getEndpoint("assets/images/avatar/avatar-default.png").toURL();
+        return getEndpoint("/assets/images/avatar/avatar-default.png").toURL();
     }
 
     public Lock getActivityLock() {
         return activityLock;
     }
 
-    public String getClientJid() {
-        return clientJid;
-    }
-
-    public String getClientSecret() {
-        return clientSecret;
+    @Override
+    protected String getClientName() {
+        return "Jophiel";
     }
 
     public static void updateUserAvatarCache(AbstractAvatarCacheService<?> avatarCacheService) {
@@ -158,9 +247,5 @@ public final class Jophiel {
 
     public static String getSessionVersion() {
         return "1";
-    }
-
-    private String getBase64Encoded(String s) {
-        return Base64.encodeBase64String(s.getBytes());
     }
 }
