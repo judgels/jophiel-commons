@@ -36,9 +36,11 @@ import org.iatoki.judgels.jophiel.services.AbstractAvatarCacheService;
 import play.mvc.Http;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -184,11 +186,19 @@ public final class Jophiel extends AbstractJudgelsClient {
     }
 
     public URI getServiceProfileUri(String returnUri) {
-        return getEndpoint("/serviceProfile/" + returnUri);
+        try {
+            return getEndpoint("/serviceProfile/" + URLEncoder.encode(returnUri, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public URI getServiceLogout(String returnUri) {
-        return getEndpoint("/serviceLogout/" + returnUri);
+        try {
+            return getEndpoint("/serviceLogout/" + URLEncoder.encode(returnUri, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public UserInfoResponse getUserInfoRequest(String accessToken) {
