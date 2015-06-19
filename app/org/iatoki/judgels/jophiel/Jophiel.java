@@ -186,19 +186,19 @@ public final class Jophiel extends AbstractJudgelsClient {
     }
 
     public URI getServiceProfileUri(String returnUri) {
-        try {
-            return getEndpoint("/serviceProfile/" + URLEncoder.encode(returnUri, "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        List<NameValuePair> params = ImmutableList.of(
+                new BasicNameValuePair("continueUrl", returnUri)
+        );
+
+        return getEndpoint("/serviceProfile", params);
     }
 
     public URI getServiceLogout(String returnUri) {
-        try {
-            return getEndpoint("/serviceLogout/" + URLEncoder.encode(returnUri, "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        List<NameValuePair> params = ImmutableList.of(
+                new BasicNameValuePair("continueUrl", returnUri)
+        );
+
+        return getEndpoint("/serviceLogout", params);
     }
 
     public UserInfoResponse getUserInfoRequest(String accessToken) {
