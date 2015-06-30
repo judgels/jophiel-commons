@@ -19,15 +19,19 @@ import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Result;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.TimeUnit;
 
+@Named
 public final class JophielClientController extends Controller {
 
     private final Jophiel jophiel;
     private final BaseUserService userService;
 
+    @Inject
     public JophielClientController(Jophiel jophiel, BaseUserService userService) {
         this.jophiel = jophiel;
         this.userService = userService;
