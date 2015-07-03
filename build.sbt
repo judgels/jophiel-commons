@@ -9,7 +9,8 @@ lazy val jophielcommons = (project in file("."))
     .settings(
         name := "jophielcommons",
         version := IO.read(file("version.properties")).trim,
-        scalaVersion := "2.11.1"
+        scalaVersion := "2.11.7",
+        routesGenerator := InjectedRoutesGenerator
     )
     .settings(TestNGPlugin.testNGSettings: _*)
     .settings(

@@ -32,15 +32,13 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.iatoki.judgels.AbstractJudgelsClient;
 import org.iatoki.judgels.commons.IdentityUtils;
-import org.iatoki.judgels.jophiel.services.AbstractAvatarCacheService;
+import org.iatoki.judgels.jophiel.services.impls.AbstractBaseAvatarCacheServiceImpl;
 import play.mvc.Http;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -245,7 +243,7 @@ public final class Jophiel extends AbstractJudgelsClient {
         return "Jophiel";
     }
 
-    public static void updateUserAvatarCache(AbstractAvatarCacheService<?> avatarCacheService) {
+    public static void updateUserAvatarCache(AbstractBaseAvatarCacheServiceImpl<?> avatarCacheService) {
         if (IdentityUtils.getUserJid() != null) {
             try {
                 avatarCacheService.putImageUrl(IdentityUtils.getUserJid(), new URL(Http.Context.current().session().get("avatar")), IdentityUtils.getUserJid(), IdentityUtils.getIpAddress());
