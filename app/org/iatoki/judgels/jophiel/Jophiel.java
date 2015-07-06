@@ -63,7 +63,7 @@ public final class Jophiel extends AbstractJudgelsClient {
               new BasicNameValuePair("userActivities", new Gson().toJson(activityLogList))
         );
 
-        HttpPost request = new HttpPost(getEndpoint("/verifyUsername"));
+        HttpPost request = new HttpPost(getEndpoint("/userActivities"));
         request.setEntity(new UrlEncodedFormEntity(params));
         request.setHeader(new BasicHeader("Authorization", "Bearer " + Base64.encodeBase64String(accessToken.getBytes())));
 
