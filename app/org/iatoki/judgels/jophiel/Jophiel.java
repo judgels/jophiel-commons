@@ -230,6 +230,14 @@ public final class Jophiel extends AbstractJudgelsClient {
         }
     }
 
+    public String getLinkedClientsEndPoint() {
+        try {
+            return getEndpoint("/linkedClients").toURL().toString();
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public URL getDefaultAvatarUrl() throws MalformedURLException {
         return getEndpoint("/assets/images/avatar/avatar-default.png").toURL();
     }
