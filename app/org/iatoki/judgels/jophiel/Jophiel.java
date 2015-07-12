@@ -31,7 +31,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.iatoki.judgels.AbstractJudgelsClient;
-import org.iatoki.judgels.commons.IdentityUtils;
+import org.iatoki.judgels.play.IdentityUtils;
 import org.iatoki.judgels.jophiel.services.impls.AbstractBaseAvatarCacheServiceImpl;
 import play.mvc.Http;
 
