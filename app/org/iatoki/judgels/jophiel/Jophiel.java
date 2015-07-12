@@ -56,7 +56,7 @@ public final class Jophiel extends AbstractJudgelsClient {
         this.activityLock = new ReentrantLock();
     }
 
-    boolean sendUserActivityMessages(String accessToken, List<UserActivityMessage> activityLogList) throws IOException {
+    public boolean sendUserActivityMessages(String accessToken, List<UserActivityMessage> activityLogList) throws IOException {
         CloseableHttpClient httpClient = getHttpClient();
 
         List<NameValuePair> params = ImmutableList.of(

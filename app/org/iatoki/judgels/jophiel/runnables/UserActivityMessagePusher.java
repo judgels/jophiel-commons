@@ -1,6 +1,8 @@
-package org.iatoki.judgels.jophiel;
+package org.iatoki.judgels.jophiel.runnables;
 
 import com.google.common.collect.Lists;
+import org.iatoki.judgels.jophiel.Jophiel;
+import org.iatoki.judgels.jophiel.UserActivityMessage;
 import org.iatoki.judgels.jophiel.services.BaseUserService;
 import org.iatoki.judgels.jophiel.services.UserActivityMessageService;
 import play.db.jpa.JPA;
