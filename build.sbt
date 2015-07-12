@@ -10,6 +10,9 @@ lazy val jophielcommons = (project in file("."))
         name := "jophielcommons",
         version := IO.read(file("version.properties")).trim,
         scalaVersion := "2.11.7",
+        libraryDependencies ++= Seq(
+            "com.nimbusds" % "c2id-server-sdk" % "2.0"
+        ),
         routesGenerator := InjectedRoutesGenerator
     )
     .settings(TestNGPlugin.testNGSettings: _*)
