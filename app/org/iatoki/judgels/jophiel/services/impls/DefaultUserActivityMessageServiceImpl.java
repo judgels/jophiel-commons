@@ -20,7 +20,7 @@ public final class DefaultUserActivityMessageServiceImpl implements UserActivity
     }
 
     @Override
-    public void addUserActivityMessage(UserActivityMessage userActivityMessage) throws InterruptedException{
+    public void addUserActivityMessage(UserActivityMessage userActivityMessage) throws InterruptedException {
         if (jophiel.getActivityLock().tryLock(10, TimeUnit.SECONDS)) {
             userActivities.add(userActivityMessage);
             jophiel.getActivityLock().unlock();

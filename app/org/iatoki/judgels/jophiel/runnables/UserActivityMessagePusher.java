@@ -26,28 +26,28 @@ public final class UserActivityMessagePusher implements Runnable {
     @Override
     public void run() {
         JPA.withTransaction(() -> {
-            try {
-                List<UserActivityMessage> userActivities = userActivityMessageService.getUserActivityMessages();
-                Map<String, List<UserActivityMessage>> activityLogMap = new HashMap<>();
+                try {
+                    List<UserActivityMessage> userActivities = userActivityMessageService.getUserActivityMessages();
+                    Map<String, List<UserActivityMessage>> activityLogMap = new HashMap<>();
 
-                for (UserActivityMessage activityLog : userActivities) {
-                    if (activityLogMap.containsKey(activityLog.getUserJid())) {
-                        activityLogMap.get(activityLog.getUserJid()).add(activityLog);
-                    } else {
-                        activityLogMap.put(activityLog.getUserJid(), Lists.newArrayList(activityLog));
+                    for (UserActivityMessage activityLog : userActivities) {
+                        if (activityLogMap.containsKey(activityLog.getUserJid())) {
+                            activityLogMap.get(activityLog.getUserJid()).add(activityLog);
+                        } else {
+                            activityLogMap.put(activityLog.getUserJid(), Lists.newArrayList(activityLog));
+                        }
                     }
-                }
 
-                for (String userJid : activityLogMap.keySet()) {
-                    // TODO check if access token is valid, if not should use refresh token
-                    String accessToken = userService.getUserTokensByUserJid(userJid).getAccessToken();
-                    if ((accessToken != null) && (!jophiel.sendUserActivityMessages(accessToken, activityLogMap.get(userJid)))) {
-                        userActivityMessageService.addUserActivityMessages(activityLogMap.get(userJid));
+                    for (String userJid : activityLogMap.keySet()) {
+                        // TODO check if access token is valid, if not should use refresh token
+                        String accessToken = userService.getUserTokensByUserJid(userJid).getAccessToken();
+                        if ((accessToken != null) && (!jophiel.sendUserActivityMessages(accessToken, activityLogMap.get(userJid)))) {
+                            userActivityMessageService.addUserActivityMessages(activityLogMap.get(userJid));
+                        }
                     }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
+            });
     }
 }

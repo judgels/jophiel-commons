@@ -11,7 +11,7 @@ public abstract class BaseLoggedIn extends Security.Authenticator {
     @Override
     public String getUsername(Http.Context context) {
         try {
-            if ((context.session().containsKey("version")) && (context.session().get("version").equals(Jophiel.getSessionVersion())) ) {
+            if ((context.session().containsKey("version")) && (context.session().get("version").equals(Jophiel.getSessionVersion()))) {
                 if (context.request().method().equals("POST")) {
                     return context.session().get("username");
                 } else {

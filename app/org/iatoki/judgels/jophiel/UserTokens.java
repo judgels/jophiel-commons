@@ -2,6 +2,12 @@ package org.iatoki.judgels.jophiel;
 
 public final class UserTokens {
 
+    private String userJid;
+    private String accessToken;
+    private String refreshToken;
+    private String idToken;
+    private long expireTime;
+
     public UserTokens(String userJid, String accessToken, String refreshToken, String idToken, long expireTime) {
         this.userJid = userJid;
         this.accessToken = accessToken;
@@ -9,16 +15,6 @@ public final class UserTokens {
         this.idToken = idToken;
         this.expireTime = expireTime;
     }
-
-    private String userJid;
-
-    private String accessToken;
-
-    private String refreshToken;
-
-    private String idToken;
-
-    private long expireTime;
 
     public String getUserJid() {
         return userJid;

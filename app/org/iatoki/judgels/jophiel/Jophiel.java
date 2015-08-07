@@ -203,7 +203,7 @@ public final class Jophiel extends AbstractJudgelsClient {
         HTTPRequest httpRequest;
         try {
             httpRequest = new HTTPRequest(HTTPRequest.Method.GET, getEndpoint("/userinfo").toURL());
-            httpRequest.setAuthorization("Bearer "+ Base64.encodeBase64String(accessToken.getBytes()));
+            httpRequest.setAuthorization("Bearer " + Base64.encodeBase64String(accessToken.getBytes()));
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
