@@ -1,6 +1,6 @@
 # Judgment Angels - Jophiel Commons
 
-[![Build Status](https://travis-ci.org/judgels/jophielcommons.svg?branch=master)](https://travis-ci.org/judgels/jophielcommons)
+[![Build Status](https://travis-ci.org/judgels/jophiel-commons.svg?branch=master)](https://travis-ci.org/judgels/jophiel-commons)
 
 This is parts of Jophiel exposed to Jophiel clients.
 

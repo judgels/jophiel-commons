@@ -31,4 +31,4 @@ lazy val jophielcommons = (project in file("."))
         sources in (Compile,doc) := Seq.empty
     )
 
-lazy val playcommons = RootProject(file("../playcommons"))
+lazy val playcommons = RootProject(file("../play-commons"))
