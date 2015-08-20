@@ -6,5 +6,4 @@ public final class ViewpointForm {
 
     @Constraints.Required
     public String username;
-
 }

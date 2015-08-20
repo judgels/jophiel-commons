@@ -9,6 +9,7 @@ import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
 public abstract class AbstractUserModel extends AbstractModel {
+
     @Id
     @GeneratedValue
     public long id;
@@ -25,5 +26,4 @@ public abstract class AbstractUserModel extends AbstractModel {
     public String idToken;
 
     public long expirationTime;
-
 }

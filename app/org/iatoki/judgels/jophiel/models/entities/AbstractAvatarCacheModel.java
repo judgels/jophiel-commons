@@ -8,6 +8,7 @@ import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
 public abstract class AbstractAvatarCacheModel extends AbstractModel {
+
     @Id
     @GeneratedValue
     public long id;

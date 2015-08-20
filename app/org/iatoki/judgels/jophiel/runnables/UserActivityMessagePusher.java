@@ -41,7 +41,7 @@ public final class UserActivityMessagePusher implements Runnable {
                     for (String userJid : activityLogMap.keySet()) {
                         // TODO check if access token is valid, if not should use refresh token
                         String accessToken = userService.getUserTokensByUserJid(userJid).getAccessToken();
-                        if ((accessToken != null) && (!jophiel.sendUserActivityMessages(accessToken, activityLogMap.get(userJid)))) {
+                        if ((accessToken != null) && !jophiel.sendUserActivityMessages(accessToken, activityLogMap.get(userJid))) {
                             userActivityMessageService.addUserActivityMessages(activityLogMap.get(userJid));
                         }
                     }

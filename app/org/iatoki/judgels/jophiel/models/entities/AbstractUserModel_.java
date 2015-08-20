@@ -16,5 +16,4 @@ public abstract class AbstractUserModel_ extends AbstractModel_ {
     public static volatile SingularAttribute<AbstractUserModel, String> refreshToken;
     public static volatile SingularAttribute<AbstractUserModel, String> idToken;
     public static volatile SingularAttribute<AbstractUserModel, String> expirationTime;
-
 }
