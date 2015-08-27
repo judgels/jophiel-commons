@@ -1,7 +1,6 @@
 ->          /                          playcommons.Routes
 
 GET        /login                      @org.iatoki.judgels.jophiel.controllers.JophielClientController.login(returnUri: String)
-GET        /profile                    @org.iatoki.judgels.jophiel.controllers.JophielClientController.profile(returnUri: String)
-GET        /afterProfile               @org.iatoki.judgels.jophiel.controllers.JophielClientController.afterProfile(returnUri: String ?= "")
+GET        /profile                    @org.iatoki.judgels.jophiel.controllers.JophielClientController.profile()
 GET        /verify                     @org.iatoki.judgels.jophiel.controllers.JophielClientController.verify()
 GET        /logout                     @org.iatoki.judgels.jophiel.controllers.JophielClientController.logout(returnUri: String ?= "")

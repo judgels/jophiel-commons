@@ -12,9 +12,8 @@ import com.nimbusds.openid.connect.sdk.OIDCAccessTokenResponse;
 import com.nimbusds.openid.connect.sdk.UserInfoErrorResponse;
 import com.nimbusds.openid.connect.sdk.UserInfoResponse;
 import com.nimbusds.openid.connect.sdk.UserInfoSuccessResponse;
-import org.iatoki.judgels.play.IdentityUtils;
-import org.iatoki.judgels.jophiel.services.BaseUserService;
 import org.iatoki.judgels.jophiel.Jophiel;
+import org.iatoki.judgels.jophiel.services.BaseUserService;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -88,17 +87,10 @@ public final class JophielClientController extends Controller {
         return redirect(returnUri);
     }
 
-    public Result profile(String returnUri) {
-        String wrappedReturnUri = routes.JophielClientController.afterProfile(returnUri).absoluteURL(request(), request().secure());
-        URI profileUri = jophiel.getServiceProfileUri(wrappedReturnUri);
+    public Result profile() {
+        URI profileUri = jophiel.getProfileUri();
 
         return redirect(profileUri.toString());
-    }
-
-    @Transactional
-    public Result afterProfile(String returnUri) {
-        refreshUserInfo(userService.getUserTokensByUserJid(IdentityUtils.getUserJid()).getAccessToken());
-        return redirect(returnUri);
     }
 
     public Result logout(String returnUri) {
@@ -113,7 +105,6 @@ public final class JophielClientController extends Controller {
         if (userInfoResponse instanceof UserInfoSuccessResponse) {
             UserInfoSuccessResponse userInfoSuccessResponse = (UserInfoSuccessResponse) userInfoResponse;
             session("name", userInfoSuccessResponse.getUserInfo().getName());
-            session("email", userInfoSuccessResponse.getUserInfo().getEmail().toString());
             session("username", userInfoSuccessResponse.getUserInfo().getPreferredUsername());
             session("avatar", userInfoSuccessResponse.getUserInfo().getPicture().toString());
         } else {

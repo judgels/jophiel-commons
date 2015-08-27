@@ -3,11 +3,8 @@ package org.iatoki.judgels.jophiel;
 public final class UserActivityMessage {
 
     private long time;
-
     private String userJid;
-
     private String log;
-
     private String ipAddress;
 
     public UserActivityMessage(long time, String userJid, String log, String ipAddress) {

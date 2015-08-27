@@ -1,43 +1,25 @@
 package org.iatoki.judgels.jophiel;
 
 import java.net.URL;
-import java.util.List;
 
-public final class UserInfo {
-
-    private long id;
+public final class PublicUser {
 
     private String jid;
-
     private String username;
-
     private String name;
-
-    private String email;
-
     private URL profilePictureUrl;
 
-    private List<String> roles;
+    public PublicUser(String jid, String username, URL profilePictureUrl) {
+        this.jid = jid;
+        this.username = username;
+        this.profilePictureUrl = profilePictureUrl;
+    }
 
-    public UserInfo(String jid, String username, String name, URL profilePictureUrl) {
+    public PublicUser(String jid, String username, String name, URL profilePictureUrl) {
         this.jid = jid;
         this.username = username;
         this.name = name;
         this.profilePictureUrl = profilePictureUrl;
-    }
-
-    public UserInfo(long id, String jid, String username, String name, String email, URL profilePictureUrl, List<String> roles) {
-        this.id = id;
-        this.jid = jid;
-        this.username = username;
-        this.name = name;
-        this.email = email;
-        this.profilePictureUrl = profilePictureUrl;
-        this.roles = roles;
-    }
-
-    public long getId() {
-        return id;
     }
 
     public String getJid() {
@@ -52,15 +34,7 @@ public final class UserInfo {
         return name;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
     public URL getProfilePictureUrl() {
         return profilePictureUrl;
-    }
-
-    public List<String> getRoles() {
-        return roles;
     }
 }
