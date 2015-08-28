@@ -101,7 +101,7 @@ public final class Jophiel extends AbstractJudgelsClient {
         return result;
     }
 
-    public PublicUser getUserByUserJid(String userJid) throws IOException {
+    public PublicUser getPublicUserByJid(String userJid) throws IOException {
         CloseableHttpClient httpClient = getHttpClient();
 
         List<NameValuePair> params = ImmutableList.of(
@@ -110,13 +110,13 @@ public final class Jophiel extends AbstractJudgelsClient {
 
         HttpGet request = new HttpGet(getEndpoint("/userInfoByJid", params));
 
-        PublicUser userInfo = null;
+        PublicUser publicUser = null;
         String result = executeHttpRequest(httpClient, request);
         if (result != null) {
-            userInfo = new Gson().fromJson(result, PublicUser.class);
+            publicUser = new Gson().fromJson(result, PublicUser.class);
         }
 
-        return userInfo;
+        return publicUser;
     }
 
     public URI getAuthRequestUri(URI redirectUri, String returnUri) {
