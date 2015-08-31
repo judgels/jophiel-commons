@@ -188,13 +188,10 @@ public final class Jophiel extends AbstractJudgelsClient {
     }
 
 
-    public URI getServiceProfileUri(String returnUri) {
-        List<NameValuePair> params = ImmutableList.of(
-                new BasicNameValuePair("continueUrl", returnUri)
-        );
-
-        return getEndpoint("/serviceProfile", params);
+    public URI getRegisterUri() {
+        return getEndpoint("/register");
     }
+
 
     public URI getServiceLogout(String returnUri) {
         List<NameValuePair> params = ImmutableList.of(
