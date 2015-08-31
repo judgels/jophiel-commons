@@ -224,6 +224,14 @@ public final class Jophiel extends AbstractJudgelsClient {
         }
     }
 
+    public String getIsLoggedInEndPoint() {
+        try {
+            return getEndpoint("/loggedIn").toURL().toString();
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public String getAutoCompleteEndPoint() {
         try {
             return getEndpoint("/userAutoComplete").toURL().toString();

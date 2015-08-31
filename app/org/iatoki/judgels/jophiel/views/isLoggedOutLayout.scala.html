@@ -1,0 +1,9 @@
+@(isLoggedInEndPoint: String, logoutUrl: String, isLoggedOutScriptLocation: String)(content: Html)
+
+<script type="text/javascript">
+    var jophielIsLoggedInUrl = "@isLoggedInEndPoint";
+    var logoutUrl = "@logoutUrl";
+</script>
+<script type="text/javascript" src="@controllers.routes.Assets.versioned(isLoggedOutScriptLocation)"></script>
+
+@content
