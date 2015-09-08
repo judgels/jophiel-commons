@@ -1,2 +1,4 @@
 session.timeout=Your account has been logged out.
 linkedClients.otherApps=Other Applications:
+user.search=User Search
+user.username=Username
