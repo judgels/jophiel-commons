@@ -40,20 +40,16 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public final class Jophiel extends AbstractJudgelsClient {
 
     private final ClientID clientId;
     private final Secret clientSecret;
-    private final Lock activityLock;
 
     public Jophiel(String baseUrl, String clientJid, String clientSecret) {
         super(baseUrl, clientJid, clientSecret);
         this.clientId = new ClientID(clientJid);
         this.clientSecret = new Secret(clientSecret);
-        this.activityLock = new ReentrantLock();
     }
 
     public boolean sendUserActivityMessages(String accessToken, List<UserActivityMessage> activityLogList) throws IOException {
@@ -250,10 +246,6 @@ public final class Jophiel extends AbstractJudgelsClient {
 
     public URL getDefaultAvatarUrl() throws MalformedURLException {
         return getEndpoint("/assets/images/avatar/avatar-default.png").toURL();
-    }
-
-    public Lock getActivityLock() {
-        return activityLock;
     }
 
     @Override
