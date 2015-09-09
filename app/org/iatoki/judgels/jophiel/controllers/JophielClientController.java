@@ -104,7 +104,9 @@ public final class JophielClientController extends Controller {
         UserInfoResponse userInfoResponse = jophiel.getUserInfoRequest(accessToken);
         if (userInfoResponse instanceof UserInfoSuccessResponse) {
             UserInfoSuccessResponse userInfoSuccessResponse = (UserInfoSuccessResponse) userInfoResponse;
-            session("name", userInfoSuccessResponse.getUserInfo().getName());
+            if (userInfoSuccessResponse.getUserInfo().getName() != null) {
+                session("name", userInfoSuccessResponse.getUserInfo().getName());
+            }
             session("username", userInfoSuccessResponse.getUserInfo().getPreferredUsername());
             session("avatar", userInfoSuccessResponse.getUserInfo().getPicture().toString());
         } else {
