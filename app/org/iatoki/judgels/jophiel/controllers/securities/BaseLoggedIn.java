@@ -10,26 +10,11 @@ public abstract class BaseLoggedIn extends Security.Authenticator {
 
     @Override
     public String getUsername(Http.Context context) {
-        try {
-            if (!context.session().containsKey("version") || !context.session().get("version").equals(JophielSessionUtils.getSessionVersion())) {
-                context.session().remove("username");
-                return null;
-            }
-
-            if (context.request().method().equals("POST")) {
-                return context.session().get("username");
-            }
-
-            if (!context.session().containsKey("expirationTime") || !(System.currentTimeMillis() < Long.parseLong(context.session().get("expirationTime")))) {
-                context.session().remove("username");
-                return null;
-            }
-
-            return context.session().get("username");
-        } catch (NumberFormatException e) {
-            context.session().remove("username");
+        if (!JophielSessionUtils.isSessionValid(context)) {
             return null;
         }
+
+        return context.session().get("username");
     }
 
     @Override
