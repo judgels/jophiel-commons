@@ -2,7 +2,6 @@ package org.iatoki.judgels.jophiel.services.impls;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import org.iatoki.judgels.jophiel.Jophiel;
 import org.iatoki.judgels.jophiel.models.daos.BaseAvatarCacheDao;
 import org.iatoki.judgels.jophiel.models.entities.AbstractAvatarCacheModel;
 import org.iatoki.judgels.jophiel.services.BaseAvatarCacheService;
@@ -14,16 +13,14 @@ import java.util.Map;
 
 public abstract class AbstractBaseAvatarCacheServiceImpl<M extends AbstractAvatarCacheModel> implements BaseAvatarCacheService {
 
-    private final Jophiel jophiel;
     private final BaseAvatarCacheDao<M> avatarCacheDao;
 
-    public AbstractBaseAvatarCacheServiceImpl(Jophiel jophiel, BaseAvatarCacheDao<M> avatarCacheDao) {
-        this.jophiel = jophiel;
+    public AbstractBaseAvatarCacheServiceImpl(BaseAvatarCacheDao<M> avatarCacheDao) {
         this.avatarCacheDao = avatarCacheDao;
     }
 
     @Override
-    public final void putImageUrl(String userJid, URL imageUrl, String user, String ipAddress) {
+    public final void putImageUrl(String userJid, String imageUrl, String user, String ipAddress) {
         if (avatarCacheDao.existsByUserJid(userJid)) {
             editImageUrl(userJid, imageUrl, user, ipAddress);
         } else {
@@ -32,10 +29,10 @@ public abstract class AbstractBaseAvatarCacheServiceImpl<M extends AbstractAvata
     }
 
     @Override
-    public final URL getAvatarUrl(String userJid) {
+    public final URL getAvatarUrl(String userJid, String defaultAvatarUrl) {
         try {
             if (!avatarCacheDao.existsByUserJid(userJid)) {
-                return jophiel.getDefaultAvatarUrl();
+                return new URL(defaultAvatarUrl);
             } else {
                 M jidCacheModel = avatarCacheDao.findByUserJid(userJid);
                 return new URL(jidCacheModel.avatarUrl);
@@ -46,7 +43,7 @@ public abstract class AbstractBaseAvatarCacheServiceImpl<M extends AbstractAvata
     }
 
     @Override
-    public final Map<String, URL> getAvatarUrls(List<String> userJids) {
+    public final Map<String, URL> getAvatarUrls(List<String> userJids, String defaultAvatarUrl) {
         try {
             List<M> entries = avatarCacheDao.findByUserJids(userJids);
 
@@ -58,7 +55,7 @@ public abstract class AbstractBaseAvatarCacheServiceImpl<M extends AbstractAvata
 
             for (String jid : userJids) {
                 if (!displayNamesMap.containsKey(jid)) {
-                    displayNamesMap.put(jid, jophiel.getDefaultAvatarUrl());
+                    displayNamesMap.put(jid, new URL(defaultAvatarUrl));
                 }
             }
 
@@ -68,20 +65,20 @@ public abstract class AbstractBaseAvatarCacheServiceImpl<M extends AbstractAvata
         }
     }
 
-    private void createImageUrl(String userJid, URL imageUrl, String user, String ipAddress) {
+    private void createImageUrl(String userJid, String imageUrl, String user, String ipAddress) {
         M avatarCacheModel = avatarCacheDao.createAvatarCacheModel();
 
         avatarCacheModel.userJid = userJid;
-        avatarCacheModel.avatarUrl = imageUrl.toString();
+        avatarCacheModel.avatarUrl = imageUrl;
 
         avatarCacheDao.persist(avatarCacheModel, user, ipAddress);
     }
 
-    private void editImageUrl(String userJid, URL imageUrl, String user, String ipAddress) {
+    private void editImageUrl(String userJid, String imageUrl, String user, String ipAddress) {
         M avatarCacheModel = avatarCacheDao.findByUserJid(userJid);
 
         avatarCacheModel.userJid = userJid;
-        avatarCacheModel.avatarUrl = imageUrl.toString();
+        avatarCacheModel.avatarUrl = imageUrl;
 
         avatarCacheDao.edit(avatarCacheModel, user, ipAddress);
     }

@@ -12,7 +12,8 @@ import com.nimbusds.openid.connect.sdk.OIDCAccessTokenResponse;
 import com.nimbusds.openid.connect.sdk.UserInfoErrorResponse;
 import com.nimbusds.openid.connect.sdk.UserInfoResponse;
 import com.nimbusds.openid.connect.sdk.UserInfoSuccessResponse;
-import org.iatoki.judgels.jophiel.Jophiel;
+import org.iatoki.judgels.jophiel.JophielAuthAPI;
+import org.iatoki.judgels.jophiel.JophielSessionUtils;
 import org.iatoki.judgels.jophiel.services.BaseUserService;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
@@ -27,17 +28,17 @@ import java.util.concurrent.TimeUnit;
 @Named
 public final class JophielClientController extends Controller {
 
-    private final Jophiel jophiel;
+    private final JophielAuthAPI jophielAuthAPI;
     private final BaseUserService userService;
 
     @Inject
-    public JophielClientController(Jophiel jophiel, BaseUserService userService) {
-        this.jophiel = jophiel;
+    public JophielClientController(JophielAuthAPI jophielAuthAPI, BaseUserService userService) {
+        this.jophielAuthAPI = jophielAuthAPI;
         this.userService = userService;
     }
 
     public Result login(String returnUri) {
-        return redirect(jophiel.getAuthRequestUri(getRedirectUri(), returnUri).toString());
+        return redirect(jophielAuthAPI.getAuthRequestUri(getRedirectUri(), returnUri).toString());
     }
 
     @Transactional
@@ -50,7 +51,7 @@ public final class JophielClientController extends Controller {
             throw new RuntimeException(e);
         }
 
-        AuthenticationResponse authResponse = jophiel.parseAuthResponse(authResponseUri);
+        AuthenticationResponse authResponse = jophielAuthAPI.parseAuthResponse(authResponseUri);
         if (authResponse instanceof AuthenticationErrorResponse) {
             throw new RuntimeException("Authentication error");
         }
@@ -60,7 +61,7 @@ public final class JophielClientController extends Controller {
         AuthorizationCode authCode = successResponse.getAuthorizationCode();
         String returnUri = successResponse.getState().getValue();
 
-        OIDCAccessTokenResponse accessTokenResponse = jophiel.sendAccessTokenRequest(authCode, getRedirectUri());
+        OIDCAccessTokenResponse accessTokenResponse = jophielAuthAPI.sendAccessTokenRequest(authCode, getRedirectUri());
 
         AccessToken accessToken = accessTokenResponse.getAccessToken();
         RefreshToken refreshToken = accessTokenResponse.getRefreshToken();
@@ -78,7 +79,7 @@ public final class JophielClientController extends Controller {
 
         session("userJid", userJid);
         session("expirationTime", expirationTime + "");
-        session("version", jophiel.getSessionVersion());
+        session("version", JophielSessionUtils.getSessionVersion());
 
         userService.upsertUser(userJid, accessToken.toString(), refreshToken.toString(), idToken.serialize(), expirationTime);
 
@@ -88,20 +89,16 @@ public final class JophielClientController extends Controller {
     }
 
     public Result profile() {
-        URI profileUri = jophiel.getProfileUri();
-
-        return redirect(profileUri.toString());
+        return redirect(JophielClientControllerUtils.getInstance().getUserViewProfileUrl());
     }
 
     public Result logout(String returnUri) {
-        URI logoutUri = jophiel.getServiceLogout(returnUri);
-
         session().clear();
-        return redirect(logoutUri.toString());
+        return redirect(JophielClientControllerUtils.getInstance().getServiceLogoutUrl(returnUri));
     }
 
     private void refreshUserInfo(String accessToken) {
-        UserInfoResponse userInfoResponse = jophiel.getUserInfoRequest(accessToken);
+        UserInfoResponse userInfoResponse = jophielAuthAPI.getUserInfoRequest(accessToken);
         if (userInfoResponse instanceof UserInfoSuccessResponse) {
             UserInfoSuccessResponse userInfoSuccessResponse = (UserInfoSuccessResponse) userInfoResponse;
             if (userInfoSuccessResponse.getUserInfo().getName() != null) {
@@ -111,6 +108,8 @@ public final class JophielClientController extends Controller {
             session("avatar", userInfoSuccessResponse.getUserInfo().getPicture().toString());
         } else {
             UserInfoErrorResponse userInfoErrorResponse = (UserInfoErrorResponse) userInfoResponse;
+
+            //todo handle this
         }
     }
 

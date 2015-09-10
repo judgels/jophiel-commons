@@ -1,0 +1,27 @@
+package org.iatoki.judgels.jophiel.apis;
+
+import org.iatoki.judgels.play.apis.JudgelsAPIIdentity;
+
+public final class JophielUserAPIIdentity implements JudgelsAPIIdentity {
+
+    private final String userJid;
+    private final String username;
+
+    public JophielUserAPIIdentity(String userJid, String username) {
+        this.userJid = userJid;
+        this.username = username;
+    }
+
+    public String getUserJid() {
+        return userJid;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    @Override
+    public String getName() {
+        return username;
+    }
+}

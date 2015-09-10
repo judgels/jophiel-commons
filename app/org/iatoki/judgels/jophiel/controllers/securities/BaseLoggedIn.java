@@ -1,6 +1,6 @@
 package org.iatoki.judgels.jophiel.controllers.securities;
 
-import org.iatoki.judgels.jophiel.Jophiel;
+import org.iatoki.judgels.jophiel.JophielSessionUtils;
 import play.mvc.Call;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -11,7 +11,7 @@ public abstract class BaseLoggedIn extends Security.Authenticator {
     @Override
     public String getUsername(Http.Context context) {
         try {
-            if (!context.session().containsKey("version") || !context.session().get("version").equals(Jophiel.getSessionVersion())) {
+            if (!context.session().containsKey("version") || !context.session().get("version").equals(JophielSessionUtils.getSessionVersion())) {
                 context.session().remove("username");
                 return null;
             }

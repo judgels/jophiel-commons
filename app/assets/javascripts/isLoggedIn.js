@@ -4,7 +4,7 @@ require(["jquery"], function( __tes__ ) {
         type: 'GET',
         dataType: "jsonp",
         success: function( data ) {
-            if (data.loggedIn) {
+            if (data) {
                 window.location.replace(loginAuthUrl);
             }
         }

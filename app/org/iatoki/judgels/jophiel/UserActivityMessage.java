@@ -2,10 +2,10 @@ package org.iatoki.judgels.jophiel;
 
 public final class UserActivityMessage {
 
-    private long time;
-    private String userJid;
-    private String log;
-    private String ipAddress;
+    private final long time;
+    private final String userJid;
+    private final String log;
+    private final String ipAddress;
 
     public UserActivityMessage(long time, String userJid, String log, String ipAddress) {
         this.time = time;
