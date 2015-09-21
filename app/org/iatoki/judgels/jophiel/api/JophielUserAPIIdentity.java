@@ -1,4 +1,4 @@
-package org.iatoki.judgels.jophiel.apis;
+package org.iatoki.judgels.jophiel.api;
 
 import org.iatoki.judgels.play.apis.JudgelsAPIIdentity;
 
