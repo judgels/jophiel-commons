@@ -1,6 +1,6 @@
-require(["jquery", "jquery-ui"], function( __tes__ ) {
+require(["jquery", "jquery-ui"], function() {
     $.ajax({
-        url: jophielLinkedClientsUrl,
+        url: linkedClientsAPIEndpoint,
         type: 'GET',
         dataType: "jsonp",
         success: function( data ) {
