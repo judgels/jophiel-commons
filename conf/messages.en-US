@@ -1,4 +1,7 @@
 linkedClients.text.otherApps                = Other Applications:
+
+userProfileSearch.text.userProfileSearch    = User Profile Search
+userProfileSearch.field.username            = Username
 session.timeout=Your account has been logged out.
 linkedClients.otherApps=Other Applications:
 user.search=User Search
