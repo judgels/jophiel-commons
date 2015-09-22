@@ -12,7 +12,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
 
-public abstract class AbstractAvatarCacheHibernateDao<M extends AbstractAvatarCacheModel> extends AbstractHibernateDao<String, M> implements BaseAvatarCacheDao<M> {
+public abstract class AbstractAvatarCacheHibernateDao<M extends AbstractAvatarCacheModel> extends AbstractHibernateDao<Long, M> implements BaseAvatarCacheDao<M> {
 
     protected AbstractAvatarCacheHibernateDao(Class<M> modelClass) {
         super(modelClass);

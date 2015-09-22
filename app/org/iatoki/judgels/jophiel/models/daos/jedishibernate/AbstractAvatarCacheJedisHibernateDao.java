@@ -13,7 +13,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
 
-public abstract class AbstractAvatarCacheJedisHibernateDao<M extends AbstractAvatarCacheModel> extends AbstractJedisHibernateDao<String, M> implements BaseAvatarCacheDao<M> {
+public abstract class AbstractAvatarCacheJedisHibernateDao<M extends AbstractAvatarCacheModel> extends AbstractJedisHibernateDao<Long, M> implements BaseAvatarCacheDao<M> {
 
     protected AbstractAvatarCacheJedisHibernateDao(JedisPool jedisPool, Class<M> modelClass) {
         super(jedisPool, modelClass);

@@ -5,7 +5,7 @@ import org.iatoki.judgels.jophiel.models.entities.AbstractAvatarCacheModel;
 
 import java.util.List;
 
-public interface BaseAvatarCacheDao<M extends AbstractAvatarCacheModel> extends Dao<String, M> {
+public interface BaseAvatarCacheDao<M extends AbstractAvatarCacheModel> extends Dao<Long, M> {
 
     M createAvatarCacheModel();
 
