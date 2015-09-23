@@ -4,9 +4,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public final class ActivityKeyUtils {
+public final class BasicActivityKeyUtils {
 
-    private ActivityKeyUtils() {
+    private BasicActivityKeyUtils() {
         // prevent instantiation
     }
 

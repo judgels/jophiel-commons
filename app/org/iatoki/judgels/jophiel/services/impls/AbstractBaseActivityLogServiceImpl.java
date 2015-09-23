@@ -14,12 +14,13 @@ public abstract class AbstractBaseActivityLogServiceImpl<M extends AbstractActiv
     }
 
     @Override
-    public void addActivityLog(ActivityKey activityKey, String username, String userJid, String userIpAddress) {
+    public void addActivityLog(ActivityKey activityKey, String username, long time, String userJid, String userIpAddress) {
         M activityLogModel = activityLogDao.createActivityLogModel();
 
         activityLogModel.username = username;
         activityLogModel.keyAction = activityKey.getKeyAction();
         activityLogModel.parameters = activityKey.toJsonString();
+        activityLogModel.time = time;
 
         activityLogDao.persist(activityLogModel, userJid, userIpAddress);
     }

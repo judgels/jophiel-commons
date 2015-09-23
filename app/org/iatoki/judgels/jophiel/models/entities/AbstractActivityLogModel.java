@@ -18,4 +18,6 @@ public abstract class AbstractActivityLogModel extends AbstractModel {
     public String keyAction;
 
     public String parameters;
+
+    public long time;
 }
