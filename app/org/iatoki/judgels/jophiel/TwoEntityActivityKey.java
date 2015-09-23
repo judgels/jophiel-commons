@@ -19,13 +19,13 @@ public abstract class TwoEntityActivityKey implements ActivityKey {
 
     private String refEntityName;
 
-    public final ActivityKey construct(String entity, String entityJid, String entityName, String refEntity, String refEntityJid, String refEntityName) {
-        this.entity = entity;
-        this.entityJid = entityJid;
-        this.entityName = entityName;
+    public final ActivityKey construct(String refEntity, String refEntityJid, String refEntityName, String entity, String entityJid, String entityName) {
         this.refEntity = refEntity;
         this.refEntityJid = refEntityJid;
         this.refEntityName = refEntityName;
+        this.entity = entity;
+        this.entityJid = entityJid;
+        this.entityName = entityName;
 
         return this;
     }
