@@ -11,6 +11,8 @@ import javax.persistence.metamodel.StaticMetamodel;
 public abstract class AbstractActivityLogModel_ extends AbstractModel_ {
 
         public static volatile SingularAttribute<AbstractActivityLogModel, Long> id;
+        public static volatile SingularAttribute<AbstractActivityLogModel, String> username;
         public static volatile SingularAttribute<AbstractActivityLogModel, String> keyAction;
         public static volatile SingularAttribute<AbstractActivityLogModel, String> parameters;
+        public static volatile SingularAttribute<AbstractActivityLogModel, Long> time;
 }

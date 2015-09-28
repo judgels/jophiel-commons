@@ -38,6 +38,18 @@ public final class BasicActivityKeys {
         }
     };
 
+    public static final ThreeEntityActivityKey ADD_TO_IN = new ThreeEntityActivityKey() {
+        @Override
+        public String getKeyAction() {
+            return "ADD_TO_IN";
+        }
+
+        @Override
+        public String toString() {
+            return "add " + getEntity() + " " + getEntityName() + " to " + getRefEntity() + " " + getRefEntityName() + " in " + getRefRefEntity() + " " + getRefRefEntityName() + ".";
+        }
+    };
+
     public static final OneEntityActivityKey UPLOAD = new OneEntityActivityKey() {
         @Override
         public String getKeyAction() {
@@ -59,6 +71,18 @@ public final class BasicActivityKeys {
         @Override
         public String toString() {
             return "upload " + getEntity() + " " + getEntityName() + " in " + getRefEntity() + " " + getRefEntityName() +  ".";
+        }
+    };
+
+    public static final ThreeEntityActivityKey UPLOAD_TO_IN = new ThreeEntityActivityKey() {
+        @Override
+        public String getKeyAction() {
+            return "UPLOAD_TO_IN";
+        }
+
+        @Override
+        public String toString() {
+            return "upload " + getEntity() + " " + getEntityName() + " to " + getRefEntity() + " " + getRefEntityName() + " in " + getRefRefEntity() + " " + getRefRefEntityName() + ".";
         }
     };
 
@@ -131,6 +155,18 @@ public final class BasicActivityKeys {
         @Override
         public String toString() {
             return "remove " + getEntity() + " " + getEntityName() + " from " + getRefEntity() + " " + getRefEntityName() +  ".";
+        }
+    };
+
+    public static final ThreeEntityActivityKey REMOVE_FROM_IN = new ThreeEntityActivityKey() {
+        @Override
+        public String getKeyAction() {
+            return "REMOVE_FROM_IN";
+        }
+
+        @Override
+        public String toString() {
+            return "remove " + getEntity() + " " + getEntityName() + " from " + getRefEntity() + " " + getRefEntityName() + " in " + getRefRefEntity() + " " + getRefRefEntityName() + ".";
         }
     };
 

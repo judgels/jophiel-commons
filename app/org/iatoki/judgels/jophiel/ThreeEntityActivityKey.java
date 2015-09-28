@@ -5,7 +5,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.util.Map;
 
-public abstract class TwoEntityActivityKey implements ActivityKey {
+public abstract class ThreeEntityActivityKey implements ActivityKey {
 
     private String entity;
 
@@ -19,7 +19,16 @@ public abstract class TwoEntityActivityKey implements ActivityKey {
 
     private String refEntityName;
 
-    public final ActivityKey construct(String refEntity, String refEntityJid, String refEntityName, String entity, String entityJid, String entityName) {
+    private String refRefEntity;
+
+    private String refRefEntityJid;
+
+    private String refRefEntityName;
+
+    public final ActivityKey construct(String refRefEntity, String refRefEntityJid, String refRefEntityName, String refEntity, String refEntityJid, String refEntityName, String entity, String entityJid, String entityName) {
+        this.refRefEntity = refRefEntity;
+        this.refRefEntityJid = refRefEntityJid;
+        this.refRefEntityName = refRefEntityName;
         this.refEntity = refEntity;
         this.refEntityJid = refEntityJid;
         this.refEntityName = refEntityName;
@@ -54,15 +63,27 @@ public abstract class TwoEntityActivityKey implements ActivityKey {
         return refEntityName;
     }
 
+    public String getRefRefEntity() {
+        return refRefEntity;
+    }
+
+    public String getRefRefEntityJid() {
+        return refRefEntityJid;
+    }
+
+    public String getRefRefEntityName() {
+        return refRefEntityName;
+    }
+
     @Override
     public String toJsonString() {
-        return new Gson().toJson(this, TwoEntityActivityKey.class);
+        return new Gson().toJson(this, ThreeEntityActivityKey.class);
     }
 
     @Override
     public ActivityKey fromJson(String json) {
         Map<String, String> fields = new Gson().fromJson(json, new TypeToken<Map<String, String>>() { }.getType());
 
-        return this.construct(fields.get("refEntity"), fields.get("refEntityJid"), fields.get("refEntityName"), fields.get("entity"), fields.get("entityJid"), fields.get("entityName"));
+        return this.construct(fields.get("refRefEntity"), fields.get("refRefEntityJid"), fields.get("refRefEntityName"), fields.get("refEntity"), fields.get("refEntityJid"), fields.get("refEntityName"), fields.get("entity"), fields.get("entityJid"), fields.get("entityName"));
     }
 }
