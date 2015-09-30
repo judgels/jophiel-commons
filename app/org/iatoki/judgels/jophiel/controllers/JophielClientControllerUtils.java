@@ -18,7 +18,7 @@ public final class JophielClientControllerUtils {
     }
 
     public String getUserViewProfileUrl() {
-        return baseUrl + "/profile";
+        return baseUrl + "/profiles/search";
     }
 
     public String getRegisterUrl() {
