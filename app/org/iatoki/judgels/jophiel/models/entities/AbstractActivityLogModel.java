@@ -2,6 +2,7 @@ package org.iatoki.judgels.jophiel.models.entities;
 
 import org.iatoki.judgels.play.models.entities.AbstractModel;
 
+import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
@@ -17,6 +18,7 @@ public abstract class AbstractActivityLogModel extends AbstractModel {
 
     public String keyAction;
 
+    @Column(columnDefinition = "TEXT")
     public String parameters;
 
     public long time;
