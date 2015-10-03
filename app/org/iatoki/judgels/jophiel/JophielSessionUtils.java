@@ -15,7 +15,6 @@ public final class JophielSessionUtils {
     public static boolean isSessionValid(Http.Context context) {
         try {
             if (!context.session().containsKey("version") || !context.session().get("version").equals(getSessionVersion())) {
-                context.session().clear();
                 return false;
             }
 
@@ -24,13 +23,11 @@ public final class JophielSessionUtils {
             }
 
             if (!context.session().containsKey("expirationTime") || !(System.currentTimeMillis() < Long.parseLong(context.session().get("expirationTime")))) {
-                context.session().clear();
                 return false;
             }
 
             return true;
         } catch (NumberFormatException e) {
-            context.session().clear();
             return false;
         }
     }
