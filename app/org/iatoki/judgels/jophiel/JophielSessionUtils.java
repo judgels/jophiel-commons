@@ -15,6 +15,8 @@ public final class JophielSessionUtils {
     public static boolean isSessionValid(Http.Context context) {
         try {
             if (!context.session().containsKey("version") || !context.session().get("version").equals(getSessionVersion())) {
+                context.session().remove("username");
+                context.session().remove("role");
                 return false;
             }
 
@@ -23,11 +25,15 @@ public final class JophielSessionUtils {
             }
 
             if (!context.session().containsKey("expirationTime") || !(System.currentTimeMillis() < Long.parseLong(context.session().get("expirationTime")))) {
+                context.session().remove("username");
+                context.session().remove("role");
                 return false;
             }
 
             return true;
         } catch (NumberFormatException e) {
+            context.session().remove("username");
+            context.session().remove("role");
             return false;
         }
     }
