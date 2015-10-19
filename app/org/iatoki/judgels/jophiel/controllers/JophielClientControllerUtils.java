@@ -17,7 +17,11 @@ public final class JophielClientControllerUtils {
         this.baseUrl = baseUrl;
     }
 
-    public String getUserViewProfileUrl() {
+    public String getUserEditProfileUrl() {
+        return baseUrl + "/profile";
+    }
+
+    public String getUserSearchProfileUrl() {
         return baseUrl + "/profiles/search";
     }
 

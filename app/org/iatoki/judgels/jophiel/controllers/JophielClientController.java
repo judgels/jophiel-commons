@@ -89,7 +89,7 @@ public final class JophielClientController extends Controller {
     }
 
     public Result profile() {
-        return redirect(JophielClientControllerUtils.getInstance().getUserViewProfileUrl());
+        return redirect(JophielClientControllerUtils.getInstance().getUserEditProfileUrl());
     }
 
     public Result logout(String returnUri) {
