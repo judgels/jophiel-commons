@@ -1,10 +1,12 @@
 package org.iatoki.judgels.jophiel.services;
 
+import org.iatoki.judgels.jophiel.models.entities.AbstractAvatarCacheModel;
+
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
-public interface BaseAvatarCacheService {
+public interface BaseAvatarCacheService<M extends AbstractAvatarCacheModel> {
 
     void putImageUrl(String userJid, String imageUrl, String user, String ipAddress);
 
