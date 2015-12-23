@@ -5,7 +5,6 @@ import org.iatoki.judgels.api.jophiel.JophielClientAPI;
 import org.iatoki.judgels.api.jophiel.JophielUserActivityMessage;
 import org.iatoki.judgels.jophiel.UserActivityMessage;
 import org.iatoki.judgels.jophiel.services.UserActivityMessageService;
-import play.db.jpa.JPA;
 import play.db.jpa.JPAApi;
 
 import java.util.List;
