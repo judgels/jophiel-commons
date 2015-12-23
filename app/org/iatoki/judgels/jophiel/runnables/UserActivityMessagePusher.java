@@ -6,23 +6,26 @@ import org.iatoki.judgels.api.jophiel.JophielUserActivityMessage;
 import org.iatoki.judgels.jophiel.UserActivityMessage;
 import org.iatoki.judgels.jophiel.services.UserActivityMessageService;
 import play.db.jpa.JPA;
+import play.db.jpa.JPAApi;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public final class UserActivityMessagePusher implements Runnable {
 
+    private final JPAApi jpaApi;
     private final JophielClientAPI jophielClientAPI;
     private final UserActivityMessageService userActivityMessageService;
 
-    public UserActivityMessagePusher(JophielClientAPI jophielClientAPI, UserActivityMessageService userActivityMessageService) {
+    public UserActivityMessagePusher(JPAApi jpaApi, JophielClientAPI jophielClientAPI, UserActivityMessageService userActivityMessageService) {
+        this.jpaApi = jpaApi;
         this.jophielClientAPI = jophielClientAPI;
         this.userActivityMessageService = userActivityMessageService;
     }
 
     @Override
     public void run() {
-        JPA.withTransaction(() -> {
+        jpaApi.withTransaction(() -> {
                 try {
                     List<UserActivityMessage> messages = userActivityMessageService.getUserActivityMessages();
                     List<JophielUserActivityMessage> jophielMessages = messages.stream()
