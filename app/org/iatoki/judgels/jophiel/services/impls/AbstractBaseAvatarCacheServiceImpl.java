@@ -11,7 +11,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractBaseAvatarCacheServiceImpl<M extends AbstractAvatarCacheModel> implements BaseAvatarCacheService {
+public abstract class AbstractBaseAvatarCacheServiceImpl<M extends AbstractAvatarCacheModel> implements BaseAvatarCacheService<M> {
 
     private final BaseAvatarCacheDao<M> avatarCacheDao;
 

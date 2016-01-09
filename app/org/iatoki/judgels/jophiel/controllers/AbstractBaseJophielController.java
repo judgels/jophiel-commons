@@ -1,10 +1,10 @@
 package org.iatoki.judgels.jophiel.controllers;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.iatoki.judgels.api.jophiel.JophielUser;
 import org.iatoki.judgels.play.AbstractJudgelsController;
-import org.iatoki.judgels.play.JudgelsPlayUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -46,8 +46,8 @@ public abstract class AbstractBaseJophielController extends AbstractJudgelsContr
         return ImmutableList.of("user");
     }
 
-    protected String getCurrentUserRoles() {
-        return session("role");
+    protected List<String> getCurrentUserRoles() {
+        return Lists.newArrayList(session("role").split(","));
     }
 
     protected void setCurrentUserRoles(List<String> roles) {
@@ -55,6 +55,10 @@ public abstract class AbstractBaseJophielController extends AbstractJudgelsContr
     }
 
     protected boolean currentUserHasRole(String role) {
+        if (!session().containsKey("role")) {
+            return false;
+        }
+
         return Arrays.asList(session().get("role").split(",")).contains(role);
     }
 
@@ -96,7 +100,7 @@ public abstract class AbstractBaseJophielController extends AbstractJudgelsContr
     }
 
     protected String getBackedUpOrCurrentUserJid() {
-        if (JudgelsPlayUtils.hasViewPoint()) {
+        if (hasViewPoint()) {
             return session().get("realUserJid");
         } else {
             return getCurrentUserJid();
@@ -114,6 +118,22 @@ public abstract class AbstractBaseJophielController extends AbstractJudgelsContr
 
     protected boolean isBackedUpOrCurrentUserAdmin() {
         return backedUpOrCurrentUserHasRole("admin");
+    }
+
+    protected boolean hasViewPoint() {
+        return session().containsKey("viewpoint");
+    }
+
+    protected String getViewPoint() {
+        return session("viewpoint");
+    }
+
+    protected void setViewPointInSession(String userJid) {
+        session("viewpoint", userJid);
+    }
+
+    protected void removeViewPoint() {
+        session().remove("viewpoint");
     }
 
     protected String getCurrentUserAvatarUrl() {
