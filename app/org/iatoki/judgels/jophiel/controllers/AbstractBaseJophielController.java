@@ -3,10 +3,8 @@ package org.iatoki.judgels.jophiel.controllers;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.StringUtils;
 import org.iatoki.judgels.api.jophiel.JophielUser;
-import org.iatoki.judgels.play.HtmlTemplate;
+import org.iatoki.judgels.play.AbstractJudgelsController;
 import org.iatoki.judgels.play.JudgelsPlayUtils;
-import org.iatoki.judgels.play.controllers.AbstractJudgelsController;
-import play.mvc.Result;
 
 import java.util.Arrays;
 import java.util.List;
@@ -128,10 +126,5 @@ public abstract class AbstractBaseJophielController extends AbstractJudgelsContr
 
     protected String getCurrentUserRealName() {
         return session("name");
-    }
-
-    @Override
-    protected Result renderTemplate(HtmlTemplate template) {
-        return super.renderTemplate(template);
     }
 }
