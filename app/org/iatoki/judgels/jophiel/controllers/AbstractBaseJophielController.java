@@ -47,6 +47,9 @@ public abstract class AbstractBaseJophielController extends AbstractJudgelsContr
     }
 
     protected List<String> getCurrentUserRoles() {
+        if (!session().containsKey("role")) {
+            return ImmutableList.of();
+        }
         return Lists.newArrayList(session("role").split(","));
     }
 
