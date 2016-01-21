@@ -1,6 +1,6 @@
 package org.iatoki.judgels.jophiel.api;
 
-import org.iatoki.judgels.play.apis.JudgelsAPIIdentity;
+import org.iatoki.judgels.play.api.JudgelsAPIIdentity;
 
 public final class JophielUserAPIIdentity implements JudgelsAPIIdentity {
 
