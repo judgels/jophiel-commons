@@ -1,24 +1,26 @@
 package org.iatoki.judgels.jophiel;
 
-import org.apache.http.client.utils.URIBuilder;
 import org.iatoki.judgels.jophiel.avatar.AbstractBaseAvatarCacheServiceImpl;
 import org.iatoki.judgels.play.IdentityUtils;
 import play.mvc.Http;
 
-import java.net.URISyntaxException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 public final class JophielClientControllerUtils {
 
     private static JophielClientControllerUtils INSTANCE;
 
+    private final String raphaelBaseUrl;
     private final String baseUrl;
 
-    private JophielClientControllerUtils(String baseUrl) {
+    private JophielClientControllerUtils(String raphaelBaseUrl, String baseUrl) {
+        this.raphaelBaseUrl = raphaelBaseUrl;
         this.baseUrl = baseUrl;
     }
 
     public String getUserEditProfileUrl() {
-        return baseUrl + "/profile";
+        return raphaelBaseUrl + "/account/profile";
     }
 
     public String getUserSearchProfileUrl() {
@@ -26,26 +28,29 @@ public final class JophielClientControllerUtils {
     }
 
     public String getRegisterUrl() {
-        return baseUrl + "/register";
+        return raphaelBaseUrl + "/register";
     }
 
     public String getUserDefaultAvatarUrl() {
-        return baseUrl + "/assets/images/avatar/avatar-default.png";
+        return raphaelBaseUrl + "/avatar-default.png";
     }
 
     public String getServiceLogoutUrl(String returnUri) {
+        if (returnUri == null || returnUri.isEmpty()) {
+            returnUri = raphaelBaseUrl;
+        }
         try {
-            return new URIBuilder(baseUrl).setPath("/serviceLogout").addParameter("continueUrl", returnUri).build().toString();
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException(e);
+            return raphaelBaseUrl + "/service-logout/" + URLEncoder.encode(returnUri, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException(e);
         }
     }
 
-    public static void buildInstance(String baseUrl) {
+    public static void buildInstance(String raphaelBaseUrl, String baseUrl) {
         if (INSTANCE != null) {
             throw new UnsupportedOperationException("JophielClientControllerUtils instance has already been built");
         }
-        INSTANCE = new JophielClientControllerUtils(baseUrl);
+        INSTANCE = new JophielClientControllerUtils(raphaelBaseUrl, baseUrl);
     }
 
     public static JophielClientControllerUtils getInstance() {

@@ -9,7 +9,7 @@ public final class JophielSessionUtils {
     }
 
     public static String getSessionVersion() {
-        return "1";
+        return "2";
     }
 
     public static boolean isSessionValid(Http.Context context) {
@@ -20,10 +20,6 @@ public final class JophielSessionUtils {
 
             if (context.request().method().equals("POST")) {
                 return true;
-            }
-
-            if (!context.session().containsKey("expirationTime") || !(System.currentTimeMillis() < Long.parseLong(context.session().get("expirationTime")))) {
-                return false;
             }
 
             return true;

@@ -1,17 +1,8 @@
 package org.iatoki.judgels.jophiel;
 
-import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
-import com.nimbusds.oauth2.sdk.AuthorizationCode;
-import com.nimbusds.oauth2.sdk.token.AccessToken;
-import com.nimbusds.oauth2.sdk.token.RefreshToken;
-import com.nimbusds.openid.connect.sdk.AuthenticationErrorResponse;
-import com.nimbusds.openid.connect.sdk.AuthenticationResponse;
-import com.nimbusds.openid.connect.sdk.AuthenticationSuccessResponse;
-import com.nimbusds.openid.connect.sdk.OIDCAccessTokenResponse;
-import com.nimbusds.openid.connect.sdk.UserInfoErrorResponse;
-import com.nimbusds.openid.connect.sdk.UserInfoResponse;
-import com.nimbusds.openid.connect.sdk.UserInfoSuccessResponse;
+import org.iatoki.judgels.api.jophiel.JophielPublicAPI;
+import org.iatoki.judgels.api.jophiel.JophielUser;
+import org.iatoki.judgels.api.jophiel.JophielUserProfile;
 import org.iatoki.judgels.jophiel.user.BaseUserService;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
@@ -21,67 +12,36 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.concurrent.TimeUnit;
 
 @Singleton
 public final class JophielClientController extends Controller {
 
     private final JophielAuthAPI jophielAuthAPI;
+    private final JophielPublicAPI jophielPublicAPI;
     private final BaseUserService userService;
 
     @Inject
-    public JophielClientController(JophielAuthAPI jophielAuthAPI, BaseUserService userService) {
+    public JophielClientController(JophielAuthAPI jophielAuthAPI, JophielPublicAPI jophielPublicAPI, BaseUserService userService) {
         this.jophielAuthAPI = jophielAuthAPI;
+        this.jophielPublicAPI = jophielPublicAPI;
         this.userService = userService;
     }
 
     public Result login(String returnUri) {
-        return redirect(jophielAuthAPI.getAuthRequestUri(getRedirectUri(), returnUri).toString());
+        return redirect(jophielAuthAPI.getAuthRequestUri(getRedirectUri().toString(), returnUri));
     }
 
     @Transactional
-    public Result verify() {
-        URI authResponseUri;
+    public Result postLogin(String authCode, String returnUri) {
+        JophielSession session = jophielAuthAPI.postLogin(authCode);
 
-        try {
-            authResponseUri = new URI(request().uri());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-
-        AuthenticationResponse authResponse = jophielAuthAPI.parseAuthResponse(authResponseUri);
-        if (authResponse instanceof AuthenticationErrorResponse) {
-            throw new RuntimeException("Authentication error");
-        }
-
-        AuthenticationSuccessResponse successResponse = (AuthenticationSuccessResponse) authResponse;
-
-        AuthorizationCode authCode = successResponse.getAuthorizationCode();
-        String returnUri = successResponse.getState().getValue();
-
-        OIDCAccessTokenResponse accessTokenResponse = jophielAuthAPI.sendAccessTokenRequest(authCode, getRedirectUri());
-
-        AccessToken accessToken = accessTokenResponse.getAccessToken();
-        RefreshToken refreshToken = accessTokenResponse.getRefreshToken();
-        JWT idToken = accessTokenResponse.getIDToken();
-
-        ReadOnlyJWTClaimsSet claimsSet;
-        try {
-            claimsSet = idToken.getJWTClaimsSet();
-        } catch (java.text.ParseException e) {
-            throw new RuntimeException(e);
-        }
-
-        String userJid = claimsSet.getSubject();
-        long expirationTime = System.currentTimeMillis() + TimeUnit.MILLISECONDS.convert(Long.valueOf(accessTokenResponse.getCustomParams().get("expire_in").toString()), TimeUnit.SECONDS);
-
-        session("userJid", userJid);
-        session("expirationTime", expirationTime + "");
+        session("userJid", session.getUserJid());
+        session("token", session.getToken());
         session("version", JophielSessionUtils.getSessionVersion());
 
-        userService.upsertUser(userJid, accessToken.toString(), refreshToken.toString(), idToken.serialize(), expirationTime);
+        userService.upsertUser(session.getUserJid(), session.getToken(), "unused", "unused", 0);
 
-        refreshUserInfo(accessToken.toString());
+        refreshUserInfo(session);
 
         return redirect(returnUri);
     }
@@ -95,25 +55,30 @@ public final class JophielClientController extends Controller {
         return redirect(JophielClientControllerUtils.getInstance().getServiceLogoutUrl(returnUri));
     }
 
-    private void refreshUserInfo(String accessToken) {
-        UserInfoResponse userInfoResponse = jophielAuthAPI.getUserInfoRequest(accessToken);
-        if (userInfoResponse instanceof UserInfoSuccessResponse) {
-            UserInfoSuccessResponse userInfoSuccessResponse = (UserInfoSuccessResponse) userInfoResponse;
-            if (userInfoSuccessResponse.getUserInfo().getName() != null) {
-                session("name", userInfoSuccessResponse.getUserInfo().getName());
-            }
-            session("username", userInfoSuccessResponse.getUserInfo().getPreferredUsername());
-            session("avatar", userInfoSuccessResponse.getUserInfo().getPicture().toString());
-        } else {
-            UserInfoErrorResponse userInfoErrorResponse = (UserInfoErrorResponse) userInfoResponse;
+    private void refreshUserInfo(JophielSession session) {
+        jophielPublicAPI.useOnBehalfOfUser(session.getToken());
 
-            //todo handle this
+        JophielUser user = jophielPublicAPI.findUserByJid(session.getUserJid());
+        JophielUserProfile profile = jophielPublicAPI.findUserProfileByJid(session.getUserJid());
+
+        if (profile.getName() != null) {
+            session("name", profile.getName());
+        }
+
+        session("username", user.getUsername());
+
+        if (user.getProfilePictureUrl() == null) {
+            session("avatar", JophielClientControllerUtils.getInstance().getUserDefaultAvatarUrl());
+        } else {
+            session("avatar", user.getProfilePictureUrl());
         }
     }
 
     private URI getRedirectUri() {
         try {
-            return new URI(routes.JophielClientController.verify().absoluteURL(request(), request().secure()));
+            String uri = routes.JophielClientController.postLogin("", "").absoluteURL(request(), request().secure());
+            String baseUri = uri.substring(0, uri.length() - 2);
+            return new URI(baseUri);
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
