@@ -32,7 +32,7 @@ public abstract class AbstractBaseAvatarCacheServiceImpl<M extends AbstractAvata
                 return new URL(defaultAvatarUrl);
             } else {
                 M jidCacheModel = avatarCacheDao.findByUserJid(userJid);
-                return new URL(jidCacheModel.avatarUrl);
+                return new URL(jidCacheModel.avatarUrl == null ? defaultAvatarUrl : jidCacheModel.avatarUrl);
             }
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
