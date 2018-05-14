@@ -58,7 +58,7 @@ public final class JophielClientController extends Controller {
     private void refreshUserInfo(JophielSession session) {
         jophielPublicAPI.useOnBehalfOfUser(session.getToken());
 
-        JophielUser user = jophielPublicAPI.findUserByJid(session.getUserJid());
+        JophielUser user = jophielPublicAPI.findMyself();
         JophielUserProfile profile = jophielPublicAPI.findUserProfileByJid(session.getUserJid());
 
         if (profile.getName() != null) {
